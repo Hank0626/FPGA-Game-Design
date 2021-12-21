@@ -1,0 +1,59 @@
+/*
+ * File Name: box_display.sv
+ * Module: box, box_rom
+ * Usage: Display the initial box using the VGA
+ *
+ */
+
+module box 
+(
+		input  logic [9:0] DrawX, DrawY,				// Current pixel coordinates
+		output logic is_box,					// Whether current pixel belongs to box
+		output logic [16:0] box_address		// address for color mapper to figure out what color the logo pixel should be
+);
+
+always_comb
+	begin
+	 if (DrawX >= 368 && DrawX < 392 && DrawY >= 124 && DrawY <= 148) 
+	 begin
+		is_box = 1'b1;
+		box_address = (DrawX-368) + (DrawY-124) * 24;
+	 end
+	 else
+	 begin
+	    is_box = 1'b0;
+		box_address = 18'b0;
+	 end
+	end
+
+endmodule
+	
+					
+module box_rom
+(
+		input  logic [9:0] read_address,
+		output logic [23:0] color_output
+);
+
+
+// mem has width of 4 bits and a total of 230399 addresses
+logic [3:0] mem [0:575];
+
+// We have 6 colors for box
+logic [23:0] col [4:0];
+
+assign col[0] = 24'hffffff; // white
+assign col[1] = 24'hc7cdcd;	// grey
+assign col[2] = 24'hf7dd3d;	// yellow
+
+
+assign color_output = col[mem[read_address]];
+
+initial
+begin
+	 $readmemh("./sprite_bytes/box.txt", mem);
+end
+
+
+endmodule
+

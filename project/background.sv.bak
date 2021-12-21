@@ -1,0 +1,34 @@
+/*
+ * ECE385-HelperTools/PNG-To-Txt
+ * Author: Rishi Thakkar
+ *
+ */
+
+module  background_rom
+(
+		input [17:0] read_address,
+		output logic [23:0] color_output
+);
+
+// mem has width of 4 bits and a total of 230399 addresses
+logic [3:0] mem [0:230399];
+
+// We have 6 colors for background
+logic [23:0] col [5:0];
+assign col[0] = 24'hFD0100; 	// red
+assign col[1] = 24'hFF8319;	// red1
+assign col[2] = 24'h19B9F7;	// blue
+assign col[3] = 24'hFCDC61;	// yellow
+assign col[4] = 24'h040500;	// black
+assign col[5] = 24'h49431F;	// brown
+
+assign color_output = col[mem[read_address]];
+
+initial
+begin
+	 $readmemh("./sprite_bytes/background.txt", mem);
+end
+
+
+endmodule
+

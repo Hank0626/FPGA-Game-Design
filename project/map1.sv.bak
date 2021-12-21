@@ -1,0 +1,61 @@
+/*
+ * File Name: background.sv
+ * Module: background, background_rom
+ * Usage: Display the initial background using the VGA
+ *
+ */
+
+module background 
+(
+		input  logic background_exist,				// Whether now is the background page	
+		input  logic [9:0] DrawX, DrawY,				// Current pixel coordinates
+		output logic is_background,					// Whether current pixel belongs to background
+		output logic [16:0] background_address		// address for color mapper to figure out what color the logo pixel should be
+);
+
+always_comb
+	begin
+	 if (background_exist == 1'b1) 
+		is_background = 1'b1;
+	 else
+		is_background = 1'b0;
+	
+	 if (is_background == 1'b1)
+		background_address = DrawX * 5 / 8 + DrawY *5 / 8 * 400;
+	 else 
+		background_address = 18'b0;
+	end
+
+endmodule
+	
+ 
+module background_rom
+(
+		input  logic [16:0] read_address,
+		output logic [23:0] color_output
+);
+
+
+// mem has width of 4 bits and a total of 230399 addresses
+logic [3:0] mem [0:119999];
+
+// We have 6 colors for background
+logic [23:0] col [6:0];
+assign col[0] = 24'hC66238; 	// red
+assign col[1] = 24'h9EF5FF;	// red1
+assign col[2] = 24'hFEDB89;	// blue
+assign col[3] = 24'h050404;	// yellow
+assign col[4] = 24'h545441;	// black
+assign col[5] = 24'h40402D;	// brown
+assign col[6] = 24'hCDE1E7;
+
+assign color_output = col[mem[read_address]];
+
+initial
+begin
+	 $readmemh("./sprite_bytes/background.txt", mem);
+end
+
+
+endmodule
+

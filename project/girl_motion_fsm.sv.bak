@@ -1,0 +1,232 @@
+//-------------------------------------------------------------------------
+//    girl_motion.sv                                                            --
+//    Viral Mehta                                                        --
+//    Spring 2005                                                        --
+//                                                                       --
+//    Modified by Stephen Kempf 03-01-2006                               --
+//                              03-12-2007                               --
+//    Translated by Joe Meng    07-07-2013                               --
+//    Modified by Po-Han Huang  12-08-2017                               --
+//    Spring 2018 Distribution                                           --
+//                                                                       --
+//    For use with ECE 385 Lab 8                                         --
+//    UIUC ECE Department                                                --
+//-------------------------------------------------------------------------
+
+
+module  girl_motion 
+( 					input         Clk,                // 50 MHz clock
+                             Reset,              // Active-high reset signal
+                             frame_clk,          // The clock indicating a new frame (~60Hz)
+               input [9:0]   DrawX, DrawY,       // Current pixel coordinates
+               input [7:0]   keycode,       // added input for keycode
+               output logic  is_girl,             // Whether current pixel belongs to ball or background
+					output logic [10:0] girl_address
+              );
+    
+    parameter [9:0] girl_x_min = 10'd0;       // Leftmost point on the X axis
+    parameter [9:0] girl_x_max = 10'd639;     // Rightmost point on the X axis
+    parameter [9:0] girl_y_min = 10'd17;       // Topmost point on the Y axis
+    parameter [9:0] girl_y_max = 10'd459;     // Bottommost point on the Y axis
+	 
+	 //
+    parameter [9:0] girl_x_center = 10'd80;  // Center position on the X axis
+    parameter [9:0] girl_y_center = 10'd350;  // Center position on the Y axis
+	 
+	 
+	 
+    parameter [9:0] girl_x_step = 10'd2;      // Step size on the X axis
+    parameter [9:0] girl_y_step = 10'd25;      // Step size on the Y axis
+	 
+    enum [4:0] {STILL, LEFT, RIGHT, UP1, UP2, UP3, UP4, DOWN1, DOWN2, DOWN3, DOWN4} curr_state, next_state; 
+
+
+    parameter [9:0] girl_gravity = 10'd2;      // Step size for gravity the Y axis
+    //parameter [9:0] Ball_acceleration = 10'd2;
+    parameter [9:0] girl_size = 10'd25;        // Ball size
+
+
+    logic [9:0] girl_x_pos, girl_x_motion, girl_y_pos, girl_y_motion;
+    logic [9:0] girl_x_pos_in, girl_x_motion_in, girl_y_pos_in, girl_y_motion_in;
+    
+	 
+    //-------------------------------Do not modify the always_ff blocks. -----------------------------------//
+    // Detect rising edge of frame_clk
+    logic frame_clk_delayed, frame_clk_rising_edge;
+    always_ff @ (posedge Clk) begin
+        frame_clk_delayed <= frame_clk;
+        frame_clk_rising_edge <= (frame_clk == 1'b1) && (frame_clk_delayed == 1'b0);
+    end
+    // Update registers
+    always_ff @ (posedge Clk)
+    begin
+        if (Reset)
+        begin
+            girl_x_pos <= girl_x_center;
+            girl_y_pos <= girl_y_center;
+            girl_x_motion <= 10'd0;
+            girl_y_motion <= girl_y_step;
+			curr_state <= STILL;
+        end
+        else
+        begin
+            girl_x_pos <= girl_x_pos_in;
+            girl_y_pos <= girl_y_pos_in;
+            girl_x_motion <= girl_x_motion_in;
+            girl_y_motion <= girl_y_motion_in;
+			curr_state <= next_state;
+        end
+    end
+    //-------------------------------------------------------------------------------------------------------//
+    
+	always_comb begin
+         girl_x_pos_in = girl_x_pos;
+         girl_y_pos_in = girl_y_pos;
+         next_state = curr_state;
+         //if (frame_clk_rising_edge)
+         unique case(curr_state) 
+            STILL: begin
+                girl_x_motion_in = girl_x_motion;
+                girl_y_motion_in = girl_y_motion;
+                if (keycode == 8'h04)
+                    next_state = LEFT;
+                else if (keycode == 8'h07)
+                    next_state = RIGHT;
+                else if (keycode == 8'h1a)
+                    next_state = UP1;
+            end
+
+            LEFT: begin
+                girl_x_motion_in = (~(girl_x_step) + 1'b1);
+                girl_y_motion_in = girl_y_motion;
+                if (keycode == 8'h00)
+                    next_state = STILL;
+                else if (keycode == 8'h07)
+                    next_state = RIGHT;
+                else if (keycode == 8'h1a)
+                    girl_y_motion_in = (~(girl_y_step/4) + 1'b1);
+                    next_state = UP1;
+            end
+
+            RIGHT: begin
+                girl_x_motion_in = girl_x_step;
+                girl_y_motion_in = girl_y_motion;
+                if (keycode == 8'h00)
+                    next_state = STILL;
+                else if (keycode == 8'h04)
+                    next_state = LEFT;
+                else if (keycode == 8'h1a)
+                    girl_y_motion_in = (~(girl_y_step/4) + 1'b1);
+                    next_state = UP1;
+            end
+
+            UP1: begin
+                girl_x_motion_in = girl_x_motion;
+                girl_y_motion_in = (~(girl_y_step/4) + 1'b1);
+                if (keycode == 8'h04)
+                    girl_x_motion_in = (~(girl_x_step) + 1'b1);
+                else if (keycode == 8'h07)
+                    girl_x_motion_in = girl_x_step;
+                next_state = UP2;
+            end
+
+            UP2: begin
+                girl_x_motion_in = girl_x_motion;
+                girl_y_motion_in = (~(girl_y_step/4) + 1'b1);
+                if (keycode == 8'h04)
+                    girl_x_motion_in = (~(girl_x_step) + 1'b1);
+                else if (keycode == 8'h07)
+                    girl_x_motion_in = girl_x_step;
+                next_state = UP3;
+            end
+
+            UP3: begin
+                girl_x_motion_in = girl_x_motion;
+                girl_y_motion_in = (~(girl_y_step/4) + 1'b1);
+                if (keycode == 8'h04)
+                    girl_x_motion_in = (~(girl_x_step) + 1'b1);
+                else if (keycode == 8'h07)
+                    girl_x_motion_in = girl_x_step;
+                next_state = UP4;
+            end
+            
+            UP4: begin
+                girl_x_motion_in = girl_x_motion;
+                girl_y_motion_in = (~(girl_y_step/4) + 1'b1);
+                if (keycode == 8'h04)
+                    girl_x_motion_in = (~(girl_x_step) + 1'b1);
+                else if (keycode == 8'h07)
+                    girl_x_motion_in = girl_x_step;
+                next_state = DOWN1;
+            end
+
+            DOWN1: begin
+                girl_x_motion_in = girl_x_motion;
+                girl_y_motion_in = girl_y_step/4;
+                if (keycode == 8'h04)
+                    girl_x_motion_in = (~(girl_x_step) + 1'b1);
+                else if (keycode == 8'h07)
+                    girl_x_motion_in = girl_x_step;
+                next_state = DOWN2;
+            end
+
+            DOWN2: begin
+                girl_x_motion_in = girl_x_motion;
+                girl_y_motion_in = girl_y_step/4;
+                if (keycode == 8'h04)
+                    girl_x_motion_in = (~(girl_x_step) + 1'b1);
+                else if (keycode == 8'h07)
+                    girl_x_motion_in = girl_x_step;
+                next_state = DOWN3;
+            end
+        
+            DOWN3: begin
+                girl_x_motion_in = girl_x_motion;
+                girl_y_motion_in = girl_y_step/4;
+                if (keycode == 8'h04)
+                    girl_x_motion_in = (~(girl_x_step) + 1'b1);
+                else if (keycode == 8'h07)
+                    girl_x_motion_in = girl_x_step;
+                next_state = DOWN4;
+            end
+
+            DOWN4: begin
+                girl_x_motion_in = girl_x_motion;
+                girl_y_motion_in = girl_y_step/4;
+                if (keycode == 8'h04)
+                    girl_x_motion_in = (~(girl_x_step) + 1'b1);
+                else if (keycode == 8'h07)
+                    girl_x_motion_in = girl_x_step;
+                next_state = STILL;
+            end
+         endcase
+        girl_x_pos_in = girl_x_pos + girl_x_motion;
+        girl_y_pos_in = girl_y_pos + girl_y_motion;
+    end
+    
+    // Compute whether the pixel corresponds to ball or background
+    /* Since the multiplicants are required to be signed, we have to first cast them
+       from logic to int (signed by default) before they are multiplied. */
+    int DistX, DistY, Size;
+    assign DistX = DrawX - girl_x_pos;
+    assign DistY = DrawY - girl_y_pos;
+    assign Size = girl_size;
+    always_comb begin
+//        if ( ( DistX*DistX + DistY*DistY) <= (Size*Size) ) 
+//            is_ball = 1'b1;
+//        else
+//            is_ball = 1'b0;
+        if ( DistX >= -15 && DistX <= 15 && DistY >= -25 && DistY <= 25) 
+				is_girl = 1'b1;
+        else
+            is_girl = 1'b0;
+        /* The ball's (pixelated) circle is generated using the standard circle formula.  Note that while 
+           the single line is quite powerful descriptively, it causes the synthesis tool to use up three
+           of the 12 available multipliers on the chip! */
+		  if (is_girl == 1'b1)
+				girl_address = (DrawX - girl_x_pos + 15) + 30 * (DrawY - girl_y_pos + 25);
+		  else 
+				girl_address = 12'b0;
+    end
+    
+endmodule
