@@ -6,6 +6,12 @@ curr_state.MAP 0 0 1 1
 curr_state.WIN 0 1 0 1 
 curr_state.LOSE 1 0 0 1 
 
+State Machine - |lab8|board_motion:comb_24|curr_state
+Name curr_state.STILL curr_state.DOWN2 curr_state.DOWN1 
+curr_state.STILL 0 0 0 
+curr_state.DOWN1 1 0 1 
+curr_state.DOWN2 1 1 0 
+
 State Machine - |lab8|girl_motion:girl_motion|curr_state
 Name curr_state.DOWN25 curr_state.DOWN24 curr_state.DOWN23 curr_state.DOWN22 curr_state.DOWN21 curr_state.DOWN20 curr_state.DOWN19 curr_state.DOWN18 curr_state.DOWN17 curr_state.DOWN16 curr_state.DOWN15 curr_state.DOWN14 curr_state.DOWN13 curr_state.DOWN12 curr_state.DOWN11 curr_state.DOWN10 curr_state.DOWN9 curr_state.DOWN8 curr_state.DOWN7 curr_state.DOWN6 curr_state.DOWN5 curr_state.DOWN4 curr_state.DOWN3 curr_state.DOWN2 curr_state.DOWN1 curr_state.UP25 curr_state.UP24 curr_state.UP23 curr_state.UP22 curr_state.UP21 curr_state.UP20 curr_state.UP19 curr_state.UP18 curr_state.UP17 curr_state.UP16 curr_state.UP15 curr_state.UP14 curr_state.UP13 curr_state.UP12 curr_state.UP11 curr_state.UP10 curr_state.UP9 curr_state.UP8 curr_state.UP7 curr_state.UP6 curr_state.UP5 curr_state.UP4 curr_state.UP3 curr_state.UP2 curr_state.UP1 curr_state.RIGHT curr_state.LEFT curr_state.STILL 
 curr_state.STILL 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
@@ -61,6 +67,11 @@ curr_state.DOWN22 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
 curr_state.DOWN23 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 
 curr_state.DOWN24 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 
 curr_state.DOWN25 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 
+
+State Machine - |lab8|girl_motion:girl_motion|button_push:button_push|curr_state
+Name curr_state.PUSH 
+curr_state.BEGIN 0 
+curr_state.PUSH 1 
 
 State Machine - |lab8|girl_motion:girl_motion|is_blue_diamond_eat:blue_eat|curr_state
 Name curr_state.EAT1 

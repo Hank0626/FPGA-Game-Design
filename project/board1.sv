@@ -28,28 +28,28 @@ always_comb
 
 endmodule
 
-module board_yellow
-(
-		input  logic [9:0] DrawX, DrawY,				// Current pixel coordinates
-		output logic is_board_yellow,						  // Whether current pixel belongs to board
-		output logic [9:0] board_address_yellow		// address for color mapper to figure out what color the logo pixel should be
-);
-
-always_comb
-	begin
-	 if (DrawX >= 24 && DrawX < 92 && DrawY >= 252 && DrawY < 264) 
-	 begin
-		is_board_yellow = 1'b1;
-		board_address_yellow = (DrawX - 24) + (DrawY - 252) * 68;
-	 end
-	 else
-	 begin
-	    is_board_yellow= 1'b0;
-		board_address_yellow = 18'b0;
-	 end
-	end
-
-endmodule
+//module board_yellow
+//(
+//		input  logic [9:0] DrawX, DrawY,				// Current pixel coordinates
+//		output logic is_board_yellow,						  // Whether current pixel belongs to board
+//		output logic [9:0] board_address_yellow		// address for color mapper to figure out what color the logo pixel should be
+//);
+//
+//always_comb
+//	begin
+//	 if (DrawX >= 24 && DrawX < 92 && DrawY >= 252 && DrawY < 264) 
+//	 begin
+//		is_board_yellow = 1'b1;
+//		board_address_yellow = (DrawX - 24) + (DrawY - 252) * 68;
+//	 end
+//	 else
+//	 begin
+//	    is_board_yellow= 1'b0;
+//		board_address_yellow = 18'b0;
+//	 end
+//	end
+//
+//endmodule
 	
 
 

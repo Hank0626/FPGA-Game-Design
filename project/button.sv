@@ -57,3 +57,63 @@ end
 
 endmodule
 
+
+
+module button_yellow 
+(
+		input  logic [9:0] DrawX, DrawY,
+		input  logic is_button_push,
+		output logic is_button_yellow,
+		output logic [7:0] button_yellow_address
+);
+
+always_comb
+	begin
+	if (is_button_push == 1'b0) begin
+		 if (DrawX >= 142 && DrawX < 162 && DrawY >= 322 && DrawY < 332) 
+		 begin
+			is_button_yellow = 1'b1;
+			button_yellow_address = (DrawX - 142) + (DrawY - 322) * 20;
+		 end
+		 else
+			begin
+				 is_button_yellow = 1'b0;
+				 button_yellow_address = 18'b0;
+			end
+	 end
+	 else
+	 begin
+	    is_button_yellow = 1'b0;
+		 button_yellow_address = 18'b0;
+	 end
+	end
+
+endmodule
+
+module button_yellow_rom
+(
+		input  logic [7:0] read_address,
+		output logic [23:0] color_output
+);
+
+
+// mem has width of 4 bits and a total of 230399 addresses
+logic [3:0] mem [0:199];
+
+// We have 3 colors for button
+logic [23:0] col [3:0];
+
+assign col[0] = 24'hffffff;
+assign col[1] = 24'hb5b72a;
+assign col[2] = 24'hefbe41;
+
+
+assign color_output = col[mem[read_address]];
+
+initial
+begin
+	 $readmemh("./sprite_bytes/button_yellow.txt", mem);
+end
+
+
+endmodule

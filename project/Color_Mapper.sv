@@ -25,6 +25,7 @@ module  color_mapper
 							  input  logic 			is_board,
 							  input  logic 			is_board_yellow,
 							  input  logic  			is_button,
+							  input  logic 			is_button_yellow,
 							  input  logic 			is_box,
 							  input 	logic [16:0]   map1_address,
 							  input 	logic [16:0]   background_address,
@@ -33,6 +34,7 @@ module  color_mapper
 							  input  logic [9:0]   	board_address,
 							  input  logic [9:0]    board_address_yellow,
 							  input  logic [7:0]    button_address,
+							  input  logic [7:0]    button_yellow_address,
 							  input 	logic [9:0] 	box_address,
                        input  logic [9: 0]   DrawX, DrawY,       			// Current pixel coordinates
                        output logic [7: 0]   VGA_R, VGA_G, VGA_B 			// VGA RGB output
@@ -52,6 +54,7 @@ module  color_mapper
 					  output_color_board,
 					  output_color_board_yellow,
 					  output_color_button,
+					  output_color_button_yellow,
 					  output_color_box,
 					  output_color_pole_r,
 					  output_color_pole_m,
@@ -70,6 +73,7 @@ module  color_mapper
 	 board_rom board(.read_address(board_address), .color_output(output_color_board));
 	 board_rom_yellow board_yellow(.read_address(board_address_yellow), .color_output(output_color_board_yellow));
 	 button_rom button(.read_address(button_address), .color_output(output_color_button));
+	 button_yellow_rom button_yellow(.read_address(button_yellow_address), .color_output(output_color_button_yellow));
 	 box_rom box(.read_address(box_address), .color_output(output_color_box));
 	 
 	 // ------------------------------------- girl ---------------------------------------------------
@@ -206,6 +210,12 @@ module  color_mapper
 									Red   = output_color_button[23:16];
 									Green = output_color_button[15:8];
 									Blue  = output_color_button[7:0];
+							end
+						else if (is_button_yellow == 1'b1 && output_color_button_yellow != 24'hffffff)
+							begin
+								Red   = output_color_button_yellow[23:16];
+								Green = output_color_button_yellow[15:8];
+								Blue  = output_color_button_yellow[7:0];
 							end
 						else if (is_box == 1'b1 && output_color_box != 24'hffffff)
 							begin

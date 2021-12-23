@@ -75,6 +75,7 @@ module lab8( input               CLOCK_50,
 	 logic is_board;
 	 logic is_board_yellow;
 	 logic is_button;
+	 logic is_button_yellow;
 	 logic is_box;
 	 logic is_pole;
 	 logic [3:0] girl_status;
@@ -88,6 +89,7 @@ module lab8( input               CLOCK_50,
 	 logic [9:0] board_address;
 	 logic [9:0] board_address_yellow;
 	 logic [7:0] button_address;
+	 logic [7:0] button_yellow_address;
 	 logic [9:0] box_address;
 	 logic [9:0] pole_address;
 	  
@@ -99,7 +101,10 @@ module lab8( input               CLOCK_50,
 	 logic eaten1;
 	 
 	 // Determine whether the board come down
+	 logic is_button_push;
 	 logic board_yellow_down;
+	 logic [9:0] board_x_pos, board_y_pos;
+	 logic is_girl_collide;
 // ----------------------------------------------------------
 
 
@@ -170,12 +175,16 @@ module lab8( input               CLOCK_50,
 									 .frame_clk(VGA_VS),
 									 .DrawX,
 									 .DrawY,
+									 .board_x_pos,
+									 .board_y_pos,
 									 .keycode,
 									 .is_girl, 
 									 .girl_status, 
 									 .girl_address, 
 									 .is_dead_girl,
-									 .is_diamond_eat1);
+									 .is_girl_collide,
+									 .is_diamond_eat1,
+									 .is_button_push);
 	 
 	 background background(.status, .DrawX, .DrawY, .is_background, .background_address);
 	 
@@ -185,13 +194,27 @@ module lab8( input               CLOCK_50,
 	 
 	 board board(.DrawX, .DrawY, .is_board, .board_address);
 	 
-	 board_yellow board_yellow(.DrawX, .DrawY, .is_board_yellow, .board_address_yellow);
+	 //board_yellow board_yellow(.DrawX, .DrawY, .is_board_yellow, .board_address_yellow);
 	 
 	 button button(.DrawX, .DrawY, .is_button, .button_address);
 	 
+	 button_yellow button_y(.DrawX, .DrawY, .is_button_push, .is_button_yellow, .button_yellow_address);
+	 
 	 box box(.DrawX, .DrawY, .is_box, .box_address);
 	 
-	 // pole pole(.DrawX, .DrawY, .is_pole, .pole_address);
+	 board_motion(.Clk,
+					  .Reset(Reset_h),
+					  .frame_clk(VGA_VS),
+					  .DrawX,
+					  .DrawY,
+					  .is_button_push,
+					  .is_girl_collide,
+					  .is_board_yellow,
+					  .board_address_yellow,
+					  .board_x_pos,
+					  .board_y_pos
+					  );
+					  
 	 
 // -----------------------------------------------------------------
 
@@ -209,6 +232,7 @@ module lab8( input               CLOCK_50,
 										  .is_board(is_board),
 										  .is_board_yellow(is_board_yellow),
 										  .is_button(is_button),
+										  .is_button_yellow(is_button_yellow),
 										  .is_box(is_box),
 										  .map1_address(map1_address), 
 										  .background_address(background_address), 
@@ -217,6 +241,7 @@ module lab8( input               CLOCK_50,
 										  .board_address(board_address),
 										  .board_address_yellow(board_address_yellow),
 										  .button_address(button_address),
+										  .button_yellow_address(button_yellow_address),
 										  .box_address(box_address),
 										  .DrawX(DrawX),
 										  .DrawY(DrawY),

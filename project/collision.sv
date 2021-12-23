@@ -53,8 +53,6 @@ module collision
 		assign address5 = (x - 8) / 4 + (y_bottom_cen - 4) / 4 * 160;  // left_end
 		assign address6 = (x + 8) / 4 + (y_bottom_cen - 4) / 4 * 160;  // right_end
 		
-		// ----------------------- Modify for more precise detect //
-		
 		
 		
 		
@@ -107,3 +105,36 @@ module collision
 	
 		end
 endmodule
+
+module collision_board
+(
+			input 	[9:0] x,
+			input 	[9:0] y,
+			input  	[6:0] width,
+			input 	[6:0] height,
+			input    [9:0] board_x_pos,
+			input    [9:0] board_y_pos,
+			output 	is_collide_down_board
+		);
+
+		logic	[9:0] x_left_cen;
+		logic [9:0] x_right_cen;
+		logic	[9:0] y_top_cen;
+		logic [9:0] y_bottom_cen;
+
+		assign x_left_cen = x - width / 2;
+		assign x_right_cen = x + width / 2;
+		
+		assign y_top_cen = y - height / 2;
+		assign y_bottom_cen = y + height / 2;
+
+		always_comb begin
+		if (x >= board_x_pos - 34 && x <= board_x_pos + 34 && y_bottom_cen >= board_y_pos - 7 && y_bottom_cen <= board_y_pos - 5)
+			is_collide_down_board = 1'b1;
+		else
+			is_collide_down_board = 1'b0;
+		
+		end
+endmodule
+
+

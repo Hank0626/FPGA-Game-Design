@@ -19,12 +19,15 @@ module  girl_motion
                              Reset,              // Active-high reset signal
                              frame_clk,          // The clock indicating a new frame (~60Hz)
                input [9:0]   DrawX, DrawY,       // Current pixel coordinates
+					input [9:0]   board_x_pos, board_y_pos,
                input [7:0]   keycode,       // added input for keycode
                output logic is_girl,             // Whether current pixel belongs to ball or background
+					output logic is_girl_collide,
 					output logic [3:0]  girl_status,
 					output logic [9:0] girl_address,
 					output logic is_dead_girl,
-					output logic is_diamond_eat1
+					output logic is_diamond_eat1,
+					output logic is_button_push
               );
     
     parameter [9:0] girl_x_min = 10'd0;       // Leftmost point on the X axis
@@ -191,22 +194,24 @@ module  girl_motion
 										  .height(40),
 										  .is_diamond_eat1);
 										  
-	// Determine the status of pole
-//	pole_status_det pole_status_det(.Clk,
-//											 .Reset,
-//											 .x(girl_x_pos),
-//											 .y(girl_y_pos),
-//											 .width(20),
-//											 .height(40),
-//											 .pole_status,
-//											 .is_collide_pole_down,
-//											 .is_collide_pole_left,
-//											 .is_collide_pole_right,
-//											 .is_collide_pole_left_end,
-//											 .is_collide_pole_right_end,
-//											 .board_yellow_down);
+	// Determine the status of the buttom
+	button_push button_push(.Clk,
+								   .Reset,
+								   .x(girl_x_pos),
+								   .y(girl_y_pos),
+								   .width(20),
+								   .height(40),
+								   .is_button_push);
 	
-	
+	logic is_collide_down_board;
+	collision_board cb(.x(girl_x_pos), 
+							 .y(girl_y_pos), 
+							 .width(20), 
+							 .height(40),
+							 .board_x_pos,
+							 .board_y_pos,
+							 .is_collide_down_board);
+							
 	always_comb begin
          girl_x_pos_in = girl_x_pos;
          girl_y_pos_in = girl_y_pos;
@@ -225,7 +230,7 @@ module  girl_motion
 							  next_state = RIGHT;
 						 else if (keycode == 8'h1a)
 							  next_state = UP1;
-						 if (is_collide_down == 1'b0)
+						 if (is_collide_down == 1'b0 && is_collide_down_board == 1'b0)
 							 next_state = DOWN1;
 					end
 
@@ -743,7 +748,7 @@ module  girl_motion
 					
 					DOWN1: begin
 						 girl_x_motion_in = girl_x_motion;
-						 if (is_collide_down == 1'b0)
+						 if (is_collide_down == 1'b0 && is_collide_down_board == 1'b0)
 								begin
 								girl_y_motion_in = 0;
 								next_state = DOWN2;
@@ -761,7 +766,7 @@ module  girl_motion
 
 					DOWN2: begin
 						 girl_x_motion_in = girl_x_motion;
-						 if (is_collide_down == 1'b0)
+						 if (is_collide_down == 1'b0 && is_collide_down_board == 1'b0)
 								begin
 								girl_y_motion_in = 0;
 								next_state = DOWN3;
@@ -779,7 +784,7 @@ module  girl_motion
 			  
 					DOWN3: begin
 						 girl_x_motion_in = girl_x_motion;
-						 if (is_collide_down == 1'b0)
+						 if (is_collide_down == 1'b0 && is_collide_down_board == 1'b0)
 								begin
 								girl_y_motion_in = 1;
 								next_state = DOWN4;
@@ -797,7 +802,7 @@ module  girl_motion
 
 					DOWN4: begin
 						 girl_x_motion_in = girl_x_motion;
-						 if (is_collide_down == 1'b0)
+						 if (is_collide_down == 1'b0 && is_collide_down_board == 1'b0)
 								begin
 								girl_y_motion_in = 1;
 								next_state = DOWN5;
@@ -815,7 +820,7 @@ module  girl_motion
 					
 					DOWN5: begin
 						 girl_x_motion_in = girl_x_motion;
-						 if (is_collide_down == 1'b0)
+						 if (is_collide_down == 1'b0 && is_collide_down_board == 1'b0)
 								begin
 								girl_y_motion_in = 1;
 								next_state = DOWN6;
@@ -833,7 +838,7 @@ module  girl_motion
 					
 					DOWN6: begin
 						 girl_x_motion_in = girl_x_motion;
-						 if (is_collide_down == 1'b0)
+						 if (is_collide_down == 1'b0 && is_collide_down_board == 1'b0)
 								begin
 								girl_y_motion_in = 1;
 								next_state = DOWN7;
@@ -851,7 +856,7 @@ module  girl_motion
 					
 					DOWN7: begin
 						 girl_x_motion_in = girl_x_motion;
-						 if (is_collide_down == 1'b0)
+						 if (is_collide_down == 1'b0 && is_collide_down_board == 1'b0)
 								begin
 								girl_y_motion_in = 1;
 								next_state = DOWN8;
@@ -869,7 +874,7 @@ module  girl_motion
 					
 					DOWN8: begin
 						 girl_x_motion_in = girl_x_motion;
-						 if (is_collide_down == 1'b0)
+						 if (is_collide_down == 1'b0 && is_collide_down_board == 1'b0)
 								begin
 								girl_y_motion_in = 1;
 								next_state = DOWN9;
@@ -887,7 +892,7 @@ module  girl_motion
 
 					DOWN9: begin
 						 girl_x_motion_in = girl_x_motion;
-						 if (is_collide_down == 1'b0)
+						 if (is_collide_down == 1'b0 && is_collide_down_board == 1'b0)
 								begin
 								girl_y_motion_in = 2;
 								next_state = DOWN10;
@@ -905,7 +910,7 @@ module  girl_motion
 
 					DOWN10: begin
 						 girl_x_motion_in = girl_x_motion;
-						 if (is_collide_down == 1'b0)
+						 if (is_collide_down == 1'b0 && is_collide_down_board == 1'b0)
 								begin
 								girl_y_motion_in = 2;
 								next_state = DOWN11;
@@ -923,7 +928,7 @@ module  girl_motion
 
 					DOWN11: begin
 						 girl_x_motion_in = girl_x_motion;
-						 if (is_collide_down == 1'b0)
+						 if (is_collide_down == 1'b0 && is_collide_down_board == 1'b0)
 								begin
 								girl_y_motion_in = 2;
 								next_state = DOWN12;
@@ -941,7 +946,7 @@ module  girl_motion
 
 					DOWN12: begin
 						 girl_x_motion_in = girl_x_motion;
-						 if (is_collide_down == 1'b0)
+						 if (is_collide_down == 1'b0 && is_collide_down_board == 1'b0)
 								begin
 								girl_y_motion_in = 2;
 								next_state = DOWN13;
@@ -959,7 +964,7 @@ module  girl_motion
 
 					DOWN13: begin
 						 girl_x_motion_in = girl_x_motion;
-						 if (is_collide_down == 1'b0)
+						 if (is_collide_down == 1'b0 && is_collide_down_board == 1'b0)
 								begin
 								girl_y_motion_in = 2;
 								next_state = DOWN14;
@@ -977,7 +982,7 @@ module  girl_motion
 
 					DOWN14: begin
 						 girl_x_motion_in = girl_x_motion;
-						 if (is_collide_down == 1'b0)
+						 if (is_collide_down == 1'b0 && is_collide_down_board == 1'b0)
 								begin
 								girl_y_motion_in = 2;
 								next_state = DOWN15;
@@ -995,7 +1000,7 @@ module  girl_motion
 
 					DOWN15: begin
 						 girl_x_motion_in = girl_x_motion;
-						 if (is_collide_down == 1'b0)
+						 if (is_collide_down == 1'b0 && is_collide_down_board == 1'b0)
 								begin
 								girl_y_motion_in = 2;
 								next_state = DOWN16;
@@ -1013,7 +1018,7 @@ module  girl_motion
 
 					DOWN16: begin
 						 girl_x_motion_in = girl_x_motion;
-						 if (is_collide_down == 1'b0)
+						 if (is_collide_down == 1'b0 && is_collide_down_board == 1'b0)
 								begin
 								girl_y_motion_in = 2;
 								next_state = DOWN17;
@@ -1031,7 +1036,7 @@ module  girl_motion
 
 					DOWN17: begin
 						 girl_x_motion_in = girl_x_motion;
-						 if (is_collide_down == 1'b0)
+						 if (is_collide_down == 1'b0 && is_collide_down_board == 1'b0)
 								begin
 								girl_y_motion_in = 2;
 								next_state = DOWN18;
@@ -1049,7 +1054,7 @@ module  girl_motion
 
 					DOWN18: begin
 						 girl_x_motion_in = girl_x_motion;
-						 if (is_collide_down == 1'b0)
+						 if (is_collide_down == 1'b0 && is_collide_down_board == 1'b0)
 								begin
 								girl_y_motion_in = 2;
 								next_state = DOWN19;
@@ -1067,7 +1072,7 @@ module  girl_motion
 
 					DOWN19: begin
 						 girl_x_motion_in = girl_x_motion;
-						 if (is_collide_down == 1'b0)
+						 if (is_collide_down == 1'b0 && is_collide_down_board == 1'b0)
 								begin
 								girl_y_motion_in = 2;
 								next_state = DOWN20;
@@ -1085,7 +1090,7 @@ module  girl_motion
 
 					DOWN20: begin
 						 girl_x_motion_in = girl_x_motion;
-						 if (is_collide_down == 1'b0)
+						 if (is_collide_down == 1'b0 && is_collide_down_board == 1'b0)
 								begin
 								girl_y_motion_in = 2;
 								next_state = DOWN21;
@@ -1103,7 +1108,7 @@ module  girl_motion
 
 					DOWN21: begin
 						 girl_x_motion_in = girl_x_motion;
-						 if (is_collide_down == 1'b0)
+						 if (is_collide_down == 1'b0 && is_collide_down_board == 1'b0)
 								begin
 								girl_y_motion_in = 2;
 								next_state = DOWN22;
@@ -1121,7 +1126,7 @@ module  girl_motion
 
 					DOWN22: begin
 						 girl_x_motion_in = girl_x_motion;
-						 if (is_collide_down == 1'b0)
+						 if (is_collide_down == 1'b0 && is_collide_down_board == 1'b0)
 								begin
 								girl_y_motion_in = 1;
 								next_state = DOWN23;
@@ -1139,7 +1144,7 @@ module  girl_motion
 
 					DOWN23: begin
 						 girl_x_motion_in = girl_x_motion;
-						 if (is_collide_down == 1'b0)
+						 if (is_collide_down == 1'b0 && is_collide_down_board == 1'b0)
 								begin
 								girl_y_motion_in = 1;
 								next_state = DOWN24;
@@ -1157,7 +1162,7 @@ module  girl_motion
 
 					DOWN24: begin
 						 girl_x_motion_in = girl_x_motion;
-						 if (is_collide_down == 1'b0)
+						 if (is_collide_down == 1'b0 && is_collide_down_board == 1'b0)
 								begin
 								girl_y_motion_in = 1;
 								next_state = DOWN25;
@@ -1175,7 +1180,7 @@ module  girl_motion
 
 					DOWN25: begin
 						 girl_x_motion_in = girl_x_motion;
-						 if (is_collide_down == 1'b0)
+						 if (is_collide_down == 1'b0 && is_collide_down_board == 1'b0)
 								begin
 								girl_y_motion_in = 1;
 								next_state = STILL;
