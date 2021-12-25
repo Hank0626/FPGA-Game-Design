@@ -1,0 +1,81 @@
+module mux_2_to_1 #(parameter width = 16)
+			(
+				input logic sel,
+				input logic [width-1:0] in0, in1,
+				output logic [width-1:0] out
+			);
+	always_comb begin
+		case (sel)
+			1'b0 : begin out = in0; end
+			default : begin out = in1; end
+		endcase		
+	end
+endmodule
+
+
+module mux_4_to_1 #(parameter width = 16)
+			(
+				input logic [1:0] sel,
+				input logic [width-1:0] in0, in1, in2, in3,
+				output logic [width-1:0] out
+			);
+	always_comb 
+	begin
+		case (sel)
+			2'b00 : begin out = in0; end
+			2'b01 : begin out = in1; end
+			2'b10 : begin out = in2; end
+			2'b11 : begin out = in3; end
+			default:;
+		endcase		
+	end
+endmodule
+
+module tristate_mux (
+					input logic [3:0] sel,
+					input logic [15:0] in0, in1, in2, in3,
+					output logic [15:0] out
+					);
+	always_comb 
+	begin
+		case (sel)
+			4'b0001 : begin out = in0; end
+			4'b0010 : begin out = in1; end
+			4'b0100 : begin out = in2; end
+			4'b1000 : begin out = in3; end
+			default : begin out = 16'b0; end
+		endcase
+	end
+endmodule
+
+module SEXT(input logic [15:0] IR,
+				output logic [15:0] SEXT0_10,
+				output logic [15:0] SEXT0_8,
+				output logic [15:0] SEXT0_5,
+				output logic [15:0] SEXT0_4);
+	always_comb 
+	begin
+	// use the highest prior bit to decide whether to 
+	// extend data by 1 or by 0
+	if (IR[10])
+		SEXT0_10 = {5'b11111,IR[10:0]};
+	else 
+		SEXT0_10 = {5'b00000,IR[10:0]};
+	
+	if (IR[8])
+		SEXT0_8 = {7'b1111111,IR[8:0]};
+	else 
+		SEXT0_8 = {7'b0000000,IR[8:0]};
+	
+	if (IR[5])
+		SEXT0_5 = {10'b1111111111,IR[5:0]};
+	else 
+		SEXT0_5 = {10'b0000000000,IR[5:0]};
+	
+	if (IR[4])
+		SEXT0_4 = {11'b11111111111,IR[4:0]};
+	else 
+		SEXT0_4 = {11'b00000000000,IR[4:0]};
+	
+	end
+endmodule

@@ -1,0 +1,59 @@
+/*
+ * File Name: blue_diamond_display.sv
+ * Module: blue_diamond, blue_diamond_rom
+ * Usage: Display the initial blue_diamond using the VGA
+ *
+ */
+
+module board 
+(
+		input  logic [9:0] DrawX, DrawY,				// Current pixel coordinates
+		output logic is_board,						  // Whether current pixel belongs to board
+		output logic [9:0] board_address		// address for color mapper to figure out what color the logo pixel should be
+);
+
+always_comb
+	begin
+	 if (DrawX >= 556 && DrawX < 616 && DrawY >= 200 && DrawY < 212) 
+	 begin
+		is_board = 1'b1;
+		board_address = (DrawX - 556) + (DrawY - 200) * 60;
+	 end
+	 else
+	 begin
+	    is_board = 1'b0;
+		board_address = 18'b0;
+	 end
+	end
+
+endmodule
+	
+					
+module board_rom
+(
+		input  logic [9:0] read_address,
+		output logic [23:0] color_output
+);
+
+
+// mem has width of 4 bits and a total of 230399 addresses
+logic [3:0] mem [0:719];
+
+// We have 3 colors for board
+logic [23:0] col [3:0];
+
+assign col[0] = 24'h9a12a2;
+assign col[1] = 24'h000000;
+assign col[2] = 24'hdcdcd9;
+
+
+assign color_output = col[mem[read_address]];
+
+initial
+begin
+	 $readmemh("./sprite_bytes/board.txt", mem);
+end
+
+
+endmodule
+

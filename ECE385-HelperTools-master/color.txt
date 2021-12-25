@@ -1,0 +1,55 @@
+background
+palette_hex = ['0xf80504',
+               '0x69ddfb',
+               '0xf9de7a',
+               '0x796e36',
+               '0x444123',
+               '0x807029',
+               '0x2f2c1a'
+               '0x000000']
+
+map
+palette_hex = ['0xf80504',
+               '0x69ddfb',
+               '0x59e90c',
+               '0x5f582b',
+               '0x716734',
+               '0x2d2e0c',
+               '0x202100',
+               '0x000000'，
+               '0xac0404', # red for dead
+               '0x4face5', # blue for dead
+               '0x69a42a'] # green for dead
+
+red diamond
+palette_hex = ['0xffffff',
+               '0xf80504',
+               '0xff4c4a',
+               '0xfe9597',
+               '0xba0102']
+
+
+girl and girl_move
+palette_hex = ['0xffffff',
+               '0x69ddfb',
+               '0x000000']
+
+blue_diamond
+palette_hex = ['0xffffff',
+               '0x2db6d5',
+               '0x6adefb',
+               '0x38c9e1']
+
+borad1
+palette_hex = ['0x9a12a2', '0x000000', '0xdcdcd9']
+
+box
+palette_hex = ['0xffffff',
+               '0xc7cdcd',
+               '0xf7dd3d',
+             ]
+
+button
+palette_hex = ['0xffffff','0x9a12a2', '0xefbe41']
+
+button_yellow
