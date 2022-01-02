@@ -60,3 +60,45 @@ module keycode_select(
 	end
 endmodule
 
+
+module word_output
+(
+			input 	Clk,
+			input  	Reset,
+			input 	[15:0] keycode_girl, keycode_boy,
+			output 	keyboardpress
+		);
+
+
+		enum logic [3:0] {BEGIN, PRESS} curr_state, next_state;
+		
+
+		
+		always_ff @ (posedge Clk)
+			begin 
+				if (Reset)
+				begin
+					curr_state <= BEGIN;
+				end
+				
+				else
+				begin
+					curr_state <= next_state;
+				end
+			end
+		
+		always_comb begin
+			next_state = curr_state;
+			unique case (curr_state)
+				BEGIN: begin
+					keyboardpress = 1'b0;
+					if (keycode_girl != 16'h0000 || keycode_boy != 16'h0000)
+						next_state = PRESS;
+				end
+				PRESS: begin
+					keyboardpress = 1'b1;
+				end
+			endcase
+					
+		end		
+endmodule

@@ -1,19 +1,3 @@
-//-------------------------------------------------------------------------
-//    girl_motion.sv                                                            --
-//    Viral Mehta                                                        --
-//    Spring 2005                                                        --
-//                                                                       --
-//    Modified by Stephen Kempf 03-01-2006                               --
-//                              03-12-2007                               --
-//    Translated by Joe Meng    07-07-2013                               --
-//    Modified by Po-Han Huang  12-08-2017                               --
-//    Spring 2018 Distribution                                           --
-//                                                                       --
-//    For use with ECE 385 Lab 8                                         --
-//    UIUC ECE Department                                                --
-//-------------------------------------------------------------------------
-
-
 module  board_motion 
 ( 					input         Clk,                // 50 MHz clock
                              Reset,              // Active-high reset signal
@@ -117,8 +101,6 @@ module  board_motion
 	 
 	 
     // Compute whether the pixel corresponds to ball or background
-    /* Since the multiplicants are required to be signed, we have to first cast them
-       from logic to int (signed by default) before they are multiplied. */
 	 int DistX, DistY;
 	 assign DistX = DrawX - board_x_pos;
     assign DistY = DrawY - board_y_pos;

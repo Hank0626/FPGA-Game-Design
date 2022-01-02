@@ -46,18 +46,7 @@ module collision
 						 address5,
 						 address6,
 						 address7,
-						 address8;
-
-//		assign address1 = x / 4 + y_top_cen / 4 * 160;  //top
-//		assign address2 = x / 4 + y_bottom_cen / 4 * 160;  //bottom
-//		assign address3 = x_left_cen / 4 + y / 4 * 160;  //left
-//		assign address4 = x_right_cen / 4 + y / 4 * 160;  //right
-//		
-//		// Modify
-//		assign address5 = (x - 8) / 4 + (y_bottom_cen - 4) / 4 * 160;  // left_end
-//		assign address6 = (x + 8) / 4 + (y_bottom_cen - 4) / 4 * 160;  // right_end
-//		assign address7 = (x - 8) / 4 + (y_top_cen + 4) / 4 * 160;  // left_top
-//		assign address8 = (x + 8) / 4 + (y_top_cen + 4) / 4 * 160;  // right_top		
+						 address8;	
 	
 		assign address1 = x * 5 / 16 + y_top_cen * 5 / 16 * 200;  //top
 		assign address2 = x * 5 / 16 + y_bottom_cen * 5 / 16 * 200;  //bottom

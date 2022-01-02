@@ -1,34 +1,10 @@
 /*
  * File Name: box_display.sv
  * Module: box, box_rom
- * Usage: Display the initial box using the VGA
+ * Usage: Display the box using the VGA
  *
  */
-
-//module box 
-//(
-//		input  logic [9:0] DrawX, DrawY,				// Current pixel coordinates
-//		output logic is_box,					// Whether current pixel belongs to box
-//		output logic [9:0] box_address		// address for color mapper to figure out what color the logo pixel should be
-//);
-//
-//always_comb
-//	begin
-//	 if (DrawX >= 368 && DrawX < 393 && DrawY >= 131 && DrawY < 156) 
-//	 begin
-//		is_box = 1'b1;
-//		box_address = (DrawX - 368) + (DrawY - 131) * 25;
-//	 end
-//	 else
-//	 begin
-//	    is_box = 1'b0;
-//		box_address = 18'b0;
-//	 end
-//	end
-//
-//endmodule
-	
-					
+				
 module box_rom
 (
 		input  logic [9:0] read_address,
@@ -248,8 +224,6 @@ module  box_motion
 	 
 	 
     // Compute whether the pixel corresponds to ball or background
-    /* Since the multiplicants are required to be signed, we have to first cast them
-       from logic to int (signed by default) before they are multiplied. */
 	 int DistX, DistY;
 	 assign DistX = DrawX - box_x_pos;
     assign DistY = DrawY - box_y_pos;

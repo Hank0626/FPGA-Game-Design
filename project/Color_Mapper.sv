@@ -145,11 +145,6 @@ module  color_mapper
 				Red   = output_color_background[23:16];
 				Green = output_color_background[15:8];
 				Blue  = output_color_background[7:0];
-
-				// Purple for test background
-//				Red   = 8'h88;
-//				Green = 8'h00;
-//				Blue  = 8'h88;
 			end
 		else if (status == 4'b0010)
 			begin
@@ -404,11 +399,6 @@ module  color_mapper
 							Red   = output_color_map1[23:16];
 							Green = output_color_map1[15:8];
 							Blue  = output_color_map1[7:0];
-							
-							// Yellow for test map
-//							Red   = 8'h88;
-//							Green = 8'h88;
-//							Blue  = 8'h00;
 						end
 					end
 				else

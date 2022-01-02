@@ -166,6 +166,7 @@ module  girl_motion
 	logic is_collide_down_board, is_collide_down_board_purple;
 	logic is_collide_left_board, is_collide_right_board_purple;
 	
+	// Determine the collision of the board
 	collision_board cb(.x(girl_x_pos), 
 							 .y(girl_y_pos), 
 							 .width(20), 
@@ -181,6 +182,7 @@ module  girl_motion
 							 .is_collide_down_board_purple,
 							 .is_collide_right_board_purple);
 							 
+	// Determine the collison of the box
 	logic is_collide_down_box;
 	
 	collision_box cb1(.x(girl_x_pos), 
@@ -373,12 +375,11 @@ module  girl_motion
     end
     
     // Compute whether the pixel corresponds to ball or background
-    /* Since the multiplicants are required to be signed, we have to first cast them
-       from logic to int (signed by default) before they are multiplied. */
     int DistX, DistY;
     assign DistX = DrawX - girl_x_pos;
     assign DistY = DrawY - girl_y_pos;
 
+	 // Use keycode to determine the status
     always_comb begin
 		  if ( DistX >= -10 && DistX <= 10 && DistY >= -20 && DistY <= 20) 
 				is_girl = 1'b1;

@@ -1,16 +1,10 @@
-/*
- * File Name: blue_diamond_display.sv
- * Module: blue_diamond, blue_diamond_rom
- * Usage: Display the initial blue_diamond using the VGA
- *
- */
 
 module button 
 (
 		input  logic [9:0] DrawX, DrawY,				// Current pixel coordinates
 		input  logic is_button_purple_push1,
-		output logic is_button,						  // Whether current pixel belongs to button
-		output logic [7:0] button_address		// address for color mapper to figure out what color the logo pixel should be
+		output logic is_button,			  
+		output logic [7:0] button_address
 );
 
 always_comb
@@ -42,8 +36,8 @@ module button1
 (
 		input  logic [9:0] DrawX, DrawY,				// Current pixel coordinates
 		input  logic is_button_purple_push2,
-		output logic is_button1,						  // Whether current pixel belongs to button
-		output logic [7:0] button_address1		// address for color mapper to figure out what color the logo pixel should be
+		output logic is_button1,
+		output logic [7:0] button_address1
 );
 
 always_comb
@@ -80,7 +74,6 @@ module button_rom
 );
 
 
-// mem has width of 4 bits and a total of 230399 addresses
 logic [3:0] mem [0:199];
 
 // We have 3 colors for button
@@ -140,8 +133,6 @@ module button_yellow_rom
 		output logic [23:0] color_output
 );
 
-
-// mem has width of 4 bits and a total of 230399 addresses
 logic [3:0] mem [0:199];
 
 // We have 3 colors for button

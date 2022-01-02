@@ -59,15 +59,11 @@ module game_logic
 			WIN:
 				begin
 					status = 4'b0100;
-//					if (keycode == 8'h28)  	// Press enter to return to background
-//						next_state = BACKGROUND;
 				end
 
 			LOSE:
 				begin
 					status = 4'b1000;
-//					if (keycode == 8'h28)   // Press enter to return to background
-//						next_state = BACKGROUND;
 				end
 			default: 
 				status = 4'b0000; 			// Never happen

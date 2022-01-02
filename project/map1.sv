@@ -7,10 +7,10 @@
 
 module map1 
 (
-		input  logic [3:0] status,				// Whether now is the background page	
+		input  logic [3:0] status,				// Whether now is the map page	
 		input  logic [9:0] DrawX, DrawY,				// Current pixel coordinates
-		output logic is_map1,					// Whether current pixel belongs to background
-		output logic [16:0] map1_address		// address for color mapper to figure out what color the logo pixel should be
+		output logic is_map1,					// Whether current pixel belongs to map
+		output logic [16:0] map1_address		// address for color mapper to figure out what color the map pixel should be
 );
 
 always_comb
@@ -71,11 +71,10 @@ endmodule
 module girl_word
 (
 		input  logic keyboardpress,
-		input  logic [9:0] DrawX, DrawY,				// Current pixel coordinates
+		input  logic [9:0] DrawX, DrawY,
 		output logic is_girlword,					
-		output logic [11:0] girlword_address		// address for color mapper to figure out what color the logo pixel should be
+		output logic [11:0] girlword_address
 );
-
 always_comb
     begin
         if (keyboardpress == 1'b0)
@@ -103,9 +102,9 @@ endmodule
 module boy_word
 (
 		input  logic keyboardpress,
-		input  logic [9:0] DrawX, DrawY,				// Current pixel coordinates
+		input  logic [9:0] DrawX, DrawY,
 		output logic is_boyword,					
-		output logic [11:0] boyword_address		// address for color mapper to figure out what color the logo pixel should be
+		output logic [11:0] boyword_address
 );
 
 always_comb
@@ -139,10 +138,8 @@ module girlword_rom
 );
 
 
-// mem has width of 4 bits and a total of 230399 addresses
 logic [3:0] mem [0:100*30 - 1];
 
-// We have 6 colors for background
 logic [23:0] col [3:0];
 assign col[0] = 24'hffffff;
 assign col[1] = 24'hd8ca72;
@@ -163,10 +160,8 @@ module boyword_rom
 );
 
 
-// mem has width of 4 bits and a total of 230399 addresses
 logic [3:0] mem [0:100*30 - 1];
 
-// We have 6 colors for background
 logic [23:0] col [3:0];
 assign col[0] = 24'hffffff;
 assign col[1] = 24'hd8ca72;
