@@ -30,10 +30,10 @@ module dead_girl
 						 address2,
 						 address3;
 
-		assign address1 = x / 4 + y_bottom_cen / 4 * 160;  // bottom
+		assign address1 = x * 5 / 16 + y_bottom_cen * 5 / 16 * 200;  // bottom
 		// Modify
-		assign address2 = (x - 8) / 4 + (y_bottom_cen - 4) / 4 * 160;  // left_end
-		assign address3 = (x + 8) / 4 + (y_bottom_cen - 4) / 4 * 160;  // right_end
+		assign address2 = (x - 8) * 5 / 16 + (y_bottom_cen - 4) * 5 / 16 * 200;  // left_end
+		assign address3 = (x + 8) * 5 / 16 + (y_bottom_cen - 4) * 5 / 16 * 200;  // right_end
 		
 		// ----------------------- Modify for more precise detect //
 		
@@ -48,7 +48,7 @@ module dead_girl
 		
 		// Remember to change the color
 		always_comb begin
-			if (col1 == 24'hac0404 || col1 == 24'h69a42a || col2 == 24'hac0404 || col2 == 24'h69a42a || col3 == 24'hac0404 || col3 == 24'h69a42a)
+			if (col1 == 24'hac0404 || col1 == 24'h69a42a || col3 == 24'hac0404 || col3 == 24'h69a42a)
 				is_dead_girl = 1'b1;
 			else
 				is_dead_girl = 1'b0;
@@ -76,10 +76,10 @@ module dead_boy
 						 address2,
 						 address3;
 
-		assign address1 = x / 4 + y_bottom_cen / 4 * 160;  // bottom
+		assign address1 = x * 5 / 16 + y_bottom_cen * 5 / 16 * 200;  // bottom
 		// Modify
-		assign address2 = (x - 8) / 4 + (y_bottom_cen - 4) / 4 * 160;  // left_end
-		assign address3 = (x + 8) / 4 + (y_bottom_cen - 4) / 4 * 160;  // right_end
+		assign address2 = (x - 8) * 5 / 16 + (y_bottom_cen - 4) * 5 / 16 * 200;  // left_end
+		assign address3 = (x + 8) * 5 / 16 + (y_bottom_cen - 4) * 5 / 16 * 200;  // right_end
 		
 		// ----------------------- Modify for more precise detect //
 		
@@ -99,4 +99,56 @@ module dead_boy
 			else
 				is_dead_boy = 1'b0;
 		end
+endmodule
+
+
+module gameover 
+(
+		input  logic [3:0]    status,					// Whether now is the background page	
+		input  logic [9:0] DrawX, DrawY,				// Current pixel coordinates
+		output logic is_gameover,					// Whether current pixel belongs to background
+		output logic [11:0] gameover_address		// address for color mapper to figure out what color the logo pixel should be
+);
+
+always_comb
+	begin
+	 if (status == 4'b1000) 
+	 begin
+		is_gameover = 1'b1;
+		gameover_address = DrawX * 3 / 32 + DrawY * 3 / 32 * 60;
+	 end
+	 else
+	 begin
+	   is_gameover = 1'b0;
+		gameover_address = 18'b0;
+	 end
+	end
+
+endmodule
+
+module gameover_rom
+(
+		input  logic [11:0] read_address,
+		output logic [23:0] color_output
+);
+
+
+// mem has width of 4 bits and a total of 230399 addresses
+logic [3:0] mem [0:60*45-1];
+
+// We have 6 colors for background
+logic [23:0] col [3:0];
+
+assign col[0] = 24'h000000;   // black
+assign col[1] = 24'hf80504; 	// red
+assign col[2] = 24'h69ddfb;	// blue
+
+assign color_output = col[mem[read_address]];
+
+initial
+begin
+	 $readmemh("./sprite_bytes/gameover.txt", mem);
+end
+
+
 endmodule

@@ -15,34 +15,39 @@
 
 
 module  boy_motion 
-( 					input         Clk,                // 50 MHz clock
+( 					input         Clk,                // 5c MHz clock
                              Reset,              // Active-high reset signal
                              frame_clk,          // The clock indicating a new frame (~60Hz)
                input [9:0]   DrawX, DrawY,       // Current pixel coordinates
 					input [9:0]   board_x_pos, board_y_pos,
 					input [9:0]   board_purple_x_pos, board_purple_y_pos,
+					input [9:0]   box_x_pos, box_y_pos,
                input [15:0]  keycode,       // added input for keycode
 					input    	  is_board_up,
                output logic is_boy,             // Whether current pixel belongs to ball or background
 					output logic [3:0]  boy_status,
 					output logic [9:0] boy_address,
 					output logic is_dead_boy,
+					output logic is_win_boy,
 					output logic is_diamond_eat1_red,
 					output logic is_diamond_eat1_red1,
 					output logic is_diamond_eat1_red2,
+					output logic [3:0] num_eat_red,
 					output logic is_button_push,
 					output logic is_button_purple_push1,
 					output logic is_button_purple_push2,
 					output logic is_collide_up_board,
-					output logic is_collide_up_board_purple
+					output logic is_collide_up_board_purple,
+					output logic is_collide_left_box,
+					output logic is_collide_right_box
               );
     
 	 
     parameter [9:0] boy_x_center = 10'd80;  // Center position on the X axis
-    parameter [9:0] boy_y_center = 10'd440;  // Center position on the Y axis
+    parameter [9:0] boy_y_center = 10'd442;  // Center position on the Y axis
 	 
 	 
-    parameter [9:0] boy_x_step = 10'd2;      // Step size on the X axis
+    parameter [9:0] boy_x_step = 10'd1;      // Step size on the X axis
     parameter [9:0] boy_y_step = 10'd40;      // Step size on the Y axis
 	 
 	 
@@ -88,7 +93,9 @@ module  boy_motion
 			is_collide_left,
 			is_collide_right,
 			is_collide_left_end,
-			is_collide_right_end;	
+			is_collide_right_end,
+			is_collide_left_top,
+			is_collide_right_top;	
 			
 	// Determine the collide status of the boy
 	collision collide(.x(boy_x_pos), 
@@ -100,7 +107,9 @@ module  boy_motion
 							.is_collide_left, 
 							.is_collide_right, 
 							.is_collide_left_end, 
-							.is_collide_right_end);
+							.is_collide_right_end,
+							.is_collide_left_top,
+							.is_collide_right_top);
 				
 	// Deremine whether the boy is dead	
 	dead_boy dg(.x(boy_x_pos),
@@ -108,7 +117,14 @@ module  boy_motion
 					 .width(20),
 					 .height(40),
 					 .is_dead_boy);
-					 
+
+	// Determine whether the boy is win
+	win_boy wg(.x(boy_x_pos),
+					.y(boy_y_pos),
+					.width(20),
+					.height(40),
+					.is_win_boy);
+					
 	// Determine whether the blue diamond is eaten
 
 	is_red_diamond_eat red_eat(.Clk,
@@ -119,7 +135,8 @@ module  boy_motion
 										.height(40),
 										.is_diamond_eat1_red,
 										.is_diamond_eat1_red1,
-										.is_diamond_eat1_red2);
+										.is_diamond_eat1_red2,
+										.num_eat_red);
 										  
 	// Determine the status of the button
 	button_push button_push(.Clk,
@@ -164,6 +181,18 @@ module  boy_motion
 							 .is_collide_up_board_purple,
 							 .is_collide_down_board_purple,
 							 .is_collide_right_board_purple);
+
+	logic is_collide_down_box;
+	
+	collision_box cb1(.x(boy_x_pos), 
+							.y(boy_y_pos), 
+							.width(20), 
+							.height(40),
+							.box_x_pos,
+							.box_y_pos,
+							.is_collide_left_box,
+							.is_collide_right_box,
+							.is_collide_down_box);
 							
 	always_comb begin
          boy_x_pos_in = boy_x_pos;
@@ -179,23 +208,23 @@ module  boy_motion
 						 max_up_in = max_up_in - max_up_in;
 						 boy_x_motion_in = 10'd0;
 						 boy_y_motion_in = 10'd0;
-						 if (keycode == 16'h0050 || keycode == 16'h5000)
+						 if (keycode == 16'h005c || keycode == 16'h5c00)
 							  next_state = LEFT;
-						 else if (keycode == 16'h004f || keycode == 16'h4f00)
+						 else if (keycode == 16'h005e || keycode == 16'h5e00)
 							  next_state = RIGHT;
-						 else if (keycode == 16'h5200 || keycode == 16'h0052)
+						 else if (keycode == 16'h6000 || keycode == 16'h0060)
 							  next_state = UP1;
-						 else if (keycode == 16'h5250 || keycode == 16'h5052)
+						 else if (keycode == 16'h605c || keycode == 16'h5c60)
 							  begin
 							  boy_x_motion_in = (~(boy_x_step) + 1'b1);
 							  next_state = UP1;
 							  end
-						 else if (keycode == 16'h524f || keycode == 16'h4f52)
+						 else if (keycode == 16'h605e || keycode == 16'h5e60)
 							  begin
 							  boy_x_motion_in = boy_x_step;
 							  next_state = UP1;
 							  end	  
-						 if (is_collide_down == 1'b0 && is_collide_down_board == 1'b0 && is_collide_down_board_purple == 1'b0)
+						 if (is_collide_down == 1'b0 && is_collide_down_board == 1'b0 && is_collide_down_board_purple == 1'b0 && is_collide_down_box == 1'b0)
 							 next_state = DOWN1;
 						 if (is_collide_down_board_purple == 1'b1 && is_board_up == 1'b1)
 							boy_y_motion_in = (~(3) + 1'b1);
@@ -203,7 +232,7 @@ module  boy_motion
 
 					LEFT: begin
 						max_up_in = max_up_in - max_up_in;
-						 if (is_collide_left == 1'b0 && is_collide_left_board == 1'b0)
+						 if (is_collide_left == 1'b0 && is_collide_left_board == 1'b0 && is_collide_right_box == 1'b0)
 						    begin
 							 boy_x_motion_in = (~(boy_x_step) + 1'b1);
 							 if (is_collide_left_end == 1'b1) 
@@ -223,24 +252,26 @@ module  boy_motion
 						 begin
 							 if (keycode == 16'h0000)
 								  next_state = STILL;
-							 else if (keycode == 16'h004f || keycode == 16'h4f00)
+							 else if (keycode == 16'h005e || keycode == 16'h5e00)
 								  next_state = RIGHT;
-							 else if (keycode == 16'h5250 || keycode == 16'h5052)
+							 else if (keycode == 16'h605c || keycode == 16'h5c60)
 							 begin
 								  next_state = UP1;
 							 end
-							 else if (keycode == 16'h524f || keycode == 16'h4f52)
+							 else if (keycode == 16'h605e || keycode == 16'h5e60)
 							 begin
 								  next_state = UP1;
 							 end
 						 end
 						 if (is_collide_down_board_purple == 1'b1 && is_board_up == 1'b1)
 							boy_y_motion_in = (~(1) + 1'b1);
+						 if(is_collide_right_box == 1'b1) 
+							next_state = STILL;
 					end
 
 					RIGHT: begin
 						max_up_in = max_up_in - max_up_in;	
-						 if (is_collide_right == 1'b0 && is_collide_right_board_purple == 1'b0)
+						 if (is_collide_right == 1'b0 && is_collide_right_board_purple == 1'b0 && is_collide_left_box == 1'b0)
 							begin
 							boy_x_motion_in = boy_x_step;
 							if (is_collide_right_end == 1'b1) 
@@ -260,15 +291,17 @@ module  boy_motion
 						 begin
 							 if (keycode == 16'h0000)
 								  next_state = STILL;
-							 else if (keycode == 16'h0050 || keycode == 16'h5000)
+							 else if (keycode == 16'h005c || keycode == 16'h5c00)
 								  next_state = LEFT;
-							 else if (keycode == 16'h5250 || keycode == 16'h5052 || keycode == 16'h524f || keycode == 16'h4f52)
+							 else if (keycode == 16'h605c || keycode == 16'h5c60 || keycode == 16'h605e || keycode == 16'h5e60)
 							 begin
 								  next_state = UP1;
 							 end
 						 end
 						if (is_collide_down_board_purple == 1'b1 && is_board_up == 1'b1)
 							boy_y_motion_in = (~(1) + 1'b1);
+						if (is_collide_left_box == 1'b1)
+							next_state = STILL;
 						 
 					end
 
@@ -299,10 +332,10 @@ module  boy_motion
 								boy_y_motion_in = 0;
 								next_state = DOWN1;
 								end
-						 if (keycode != 16'h504f || keycode != 16'h4f50) begin
-							 if ((keycode[15:8] == 8'h50 || keycode[7:0] == 8'h50) && is_collide_left == 1'b0)
+						 if (keycode != 16'h5c5e || keycode != 16'h5e5c) begin
+							 if ((keycode[15:8] == 8'h5c || keycode[7:0] == 8'h5c) && is_collide_left == 1'b0 && is_collide_left_top == 1'b0)
 								  boy_x_motion_in = (~(1) + 1'b1);
-							 else if ((keycode[15:8] == 8'h4f || keycode[7:0] == 8'h4f) && is_collide_right == 1'b0)
+							 else if ((keycode[15:8] == 8'h5e || keycode[7:0] == 8'h5e) && is_collide_right == 1'b0 && is_collide_right_top == 1'b0)
 								  boy_x_motion_in = 1;
 							end
 					end
@@ -310,7 +343,7 @@ module  boy_motion
 					DOWN1: begin
 					max_up_in = max_up_in - max_up_in;
 						 boy_x_motion_in = 0;
-						 if (is_collide_down == 1'b0 && is_collide_down_board == 1'b0 && is_collide_down_board_purple == 1'b0)
+						 if (is_collide_down == 1'b0 && is_collide_down_board == 1'b0 && is_collide_down_board_purple == 1'b0 && is_collide_down_box == 1'b0)
 								begin
 								boy_y_motion_in = 1;
 								end
@@ -321,10 +354,10 @@ module  boy_motion
 								boy_y_motion_in = 0;
 								next_state = STILL;
 								end
-						if (keycode != 16'h504f || keycode != 16'h4f50) begin
-						 if ((keycode[15:8] == 8'h50 || keycode[7:0] == 8'h50) && is_collide_left == 1'b0 && is_collide_left_board == 1'b0)
+						if (keycode != 16'h5c5e || keycode != 16'h5e5c) begin
+						 if ((keycode[15:8] == 8'h5c || keycode[7:0] == 8'h5c) && is_collide_left == 1'b0 && is_collide_left_board == 1'b0)
 							  boy_x_motion_in = (~(1) + 1'b1);
-						 else if ((keycode[15:8] == 8'h4f || keycode[7:0] == 8'h4f) && is_collide_right == 1'b0 && is_collide_right_board_purple == 1'b0)
+						 else if ((keycode[15:8] == 8'h5e || keycode[7:0] == 8'h5e) && is_collide_right == 1'b0 && is_collide_right_board_purple == 1'b0)
 							  boy_x_motion_in = 1;
 						end
 					end
@@ -360,11 +393,11 @@ module  boy_motion
 			begin
 			  boy_status = 4'b0000;
 			end
-		else if (keycode[15:8] == 8'h4f || keycode[7:0] == 8'h4f)
+		else if (keycode[15:8] == 8'h5e || keycode[7:0] == 8'h5e)
 			begin
 					boy_status = 4'b0001;
 			end
-		else if (keycode[15:8] == 8'h50 || keycode[7:0] == 8'h50)
+		else if (keycode[15:8] == 8'h5c || keycode[7:0] == 8'h5c)
 			begin
 				boy_status = 4'b0010;
 			end

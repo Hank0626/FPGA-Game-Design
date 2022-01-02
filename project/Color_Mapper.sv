@@ -17,7 +17,9 @@
 module  color_mapper 
 ( 								
 							  input  logic [3: 0]   status,
+							  input  logic          is_gameover,
 							  input  logic          is_girl, is_boy,
+							  input  logic   			is_girlword, is_boyword,
 							  input  logic [3: 0]   girl_status, boy_status,
 							  input 	logic				is_background,
 							  input 	logic				is_map1,
@@ -33,9 +35,11 @@ module  color_mapper
 							  input  logic   			is_button1,
 							  input  logic 			is_button_yellow,
 							  input  logic 			is_box,
+							  input  logic          is_designer,
 							  input 	logic [16:0]   map1_address,
 							  input 	logic [16:0]   background_address,
 							  input  logic [9:0]   	girl_address, boy_address,
+							  input  logic [11:0]   girlword_address, boyword_address,
 							  input  logic [8:0]   	blue_diamond_address,
 							  input  logic [8:0]   	blue_diamond_address1,
 							  input  logic [8:0]   	blue_diamond_address2,
@@ -48,6 +52,9 @@ module  color_mapper
 							  input  logic [7:0]    button_address1,
 							  input  logic [7:0]    button_yellow_address,
 							  input 	logic [9:0] 	box_address,
+							  input  logic [12:0]   designer_address,
+							  input  logic [11:0]   gameover_address,
+							  input  logic [11:0]   gamewin_address,
                        input  logic [9: 0]   DrawX, DrawY,       			// Current pixel coordinates
                        output logic [7: 0]   VGA_R, VGA_G, VGA_B 			// VGA RGB output
 );
@@ -61,6 +68,8 @@ module  color_mapper
 	 
 	 // Output color signal
     logic [23:0] output_color_background,
+					  output_color_gameover,
+					  output_color_gamewin,
 					  output_color_map1,
 					  output_color_blue_diamond,
 					  output_color_blue_diamond1,
@@ -83,12 +92,17 @@ module  color_mapper
 					  output_color_boy1,
 					  output_color_boy2,
 					  output_color_boy11,
-					  output_color_boy21;
+					  output_color_boy21,
+					  output_color_girlword,
+					  output_color_boyword,
+					  output_color_designer;
 	 
 // ------------------ Calculate the color based on the address -------------------------
 
 	 background_rom background(.read_address(background_address), .color_output(output_color_background));
 	 map1_rom map1(.read_address(map1_address), .color_output(output_color_map1));
+	 gameover_rom gameover(.read_address(gameover_address), .color_output(output_color_gameover));
+	 gamewin_rom gamewin(.read_address(gamewin_address), .color_output(output_color_gamewin));
 	 blue_diamond_rom bd1(.read_address(blue_diamond_address), .color_output(output_color_blue_diamond));
 	 blue_diamond_rom bd2(.read_address(blue_diamond_address1), .color_output(output_color_blue_diamond1));
 	 blue_diamond_rom bd3(.read_address(blue_diamond_address2), .color_output(output_color_blue_diamond2));
@@ -109,7 +123,7 @@ module  color_mapper
 	 girl_move2_rom girl2(.read_address(girl_address), .color_output(output_color_girl2));
 	 girl_move2_rom1 girl21(.read_address(girl_address), .color_output(output_color_girl21));
 	 // -----------------------------------------------------------------------------------------------
-	 
+	 girlword_rom gwr(.read_address(girlword_address), .color_output(output_color_girlword));
 	 
 	 // ------------------------------------- girl ---------------------------------------------------
 	 boy_rom boy(.read_address(boy_address), .color_output(output_color_boy0));
@@ -118,8 +132,9 @@ module  color_mapper
 	 boy_move2_rom boy2(.read_address(boy_address), .color_output(output_color_boy2));
 	 boy_move2_rom1 boy21(.read_address(boy_address), .color_output(output_color_boy21));
 	 // -----------------------------------------------------------------------------------------------
+	 boyword_rom bwr(.read_address(boyword_address), .color_output(output_color_boyword));
 	 
-	 
+	 designer_rom dr(.read_address(designer_address), .color_output(output_color_designer));
 // ------------------ Calculate the color based on the address ------------------------- 
 
 
@@ -127,14 +142,14 @@ module  color_mapper
     begin
 		if (status == 4'b0001 && is_background == 1'b1)
 			begin
-//				Red   = output_color_background[23:16];
-//				Green = output_color_background[15:8];
-//				Blue  = output_color_background[7:0];
+				Red   = output_color_background[23:16];
+				Green = output_color_background[15:8];
+				Blue  = output_color_background[7:0];
 
 				// Purple for test background
-				Red   = 8'h88;
-				Green = 8'h00;
-				Blue  = 8'h88;
+//				Red   = 8'h88;
+//				Green = 8'h00;
+//				Blue  = 8'h88;
 			end
 		else if (status == 4'b0010)
 			begin
@@ -372,6 +387,18 @@ module  color_mapper
 									Green = output_color_box[15:8];
 									Blue  = output_color_box[7:0];
 							end
+						else if (is_girlword == 1'b1 && output_color_girlword != 24'hffffff)
+							begin
+									Red   = output_color_girlword[23:16];
+									Green = output_color_girlword[15:8];
+									Blue  = output_color_girlword[7:0];
+							end		
+						else if (is_boyword == 1'b1 && output_color_boyword != 24'hffffff)
+							begin
+									Red   = output_color_boyword[23:16];
+									Green = output_color_boyword[15:8];
+									Blue  = output_color_boyword[7:0];
+							end
 						else
 						begin
 							Red   = output_color_map1[23:16];
@@ -391,6 +418,32 @@ module  color_mapper
 						Blue  = output_color_background[7:0];
 					end
 			end
+		else if (status == 4'b1000) begin
+			if (is_designer == 1'b1 && output_color_designer != 24'hffffff)
+				begin
+					Red   = output_color_designer[23:16];
+					Green = output_color_designer[15:8];
+					Blue  = output_color_designer[7:0];
+				end
+			else begin
+				Red   = output_color_gameover[23:16];
+				Green = output_color_gameover[15:8];
+				Blue  = output_color_gameover[7:0];
+			end
+		end
+		else if (status == 4'b0100) begin
+			if (is_designer == 1'b1 && output_color_designer != 24'hffffff)
+				begin
+					Red   = output_color_designer[23:16];
+					Green = output_color_designer[15:8];
+					Blue  = output_color_designer[7:0];
+				end
+			else begin
+				Red   = output_color_gamewin[23:16];
+				Green = output_color_gamewin[15:8];
+				Blue  = output_color_gamewin[7:0];
+			end
+		end
 		else
         begin
 				Red = 8'h7b; 

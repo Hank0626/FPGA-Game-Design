@@ -21,27 +21,32 @@ module  girl_motion
                input [9:0]   DrawX, DrawY,       // Current pixel coordinates
 					input [9:0]   board_x_pos, board_y_pos,
 					input [9:0]   board_purple_x_pos, board_purple_y_pos,
+					input [9:0]   box_x_pos, box_y_pos,
                input [15:0]   keycode,       // added input for keycode
 					input    	  is_board_up,
                output logic is_girl,             // Whether current pixel belongs to ball or background
 					output logic [3:0]  girl_status,
 					output logic [9:0] girl_address,
 					output logic is_dead_girl,
+					output logic is_win_girl,
 					output logic is_diamond_eat1,
 					output logic is_diamond_eat2,
 					output logic is_diamond_eat3,
+					output logic [3:0] num_eat_blue,
 					output logic is_button_push,
 					output logic is_button_purple_push1,
 					output logic is_button_purple_push2,
 					output logic is_collide_up_board,
-					output logic is_collide_up_board_purple
+					output logic is_collide_up_board_purple,
+					output logic is_collide_left_box,
+					output logic is_collide_right_box
               );
 
-    parameter [9:0] girl_x_center = 10'd270;  // Center position on the X axis
-    parameter [9:0] girl_y_center = 10'd410;  // Center position on the Y axis
+    parameter [9:0] girl_x_center = 10'd80;  // Center position on the X axis
+    parameter [9:0] girl_y_center = 10'd365;  // Center position on the Y axis
 	 
 	 
-    parameter [9:0] girl_x_step = 10'd2;      // Step size on the X axis
+    parameter [9:0] girl_x_step = 10'd1;      // Step size on the X axis
     parameter [9:0] girl_y_step = 10'd40;      // Step size on the Y axis
 	 
 	 
@@ -50,7 +55,7 @@ module  girl_motion
 
     logic [9:0] girl_x_pos, girl_x_motion, girl_y_pos, girl_y_motion, max_up;
     logic [9:0] girl_x_pos_in, girl_x_motion_in, girl_y_pos_in, girl_y_motion_in, max_up_in;
-    
+	 
     //-------------------------------Do not modify the always_ff blocks. -----------------------------------//
     // Detect rising edge of frame_clk
     logic frame_clk_delayed, frame_clk_rising_edge;
@@ -87,7 +92,9 @@ module  girl_motion
 			is_collide_left,
 			is_collide_right,
 			is_collide_left_end,
-			is_collide_right_end;	
+			is_collide_right_end,
+			is_collide_left_top,
+			is_collide_right_top;	
 			
 	// Determine the collide status of the girl
 	collision collide(.x(girl_x_pos), 
@@ -99,7 +106,9 @@ module  girl_motion
 							.is_collide_left, 
 							.is_collide_right, 
 							.is_collide_left_end, 
-							.is_collide_right_end);
+							.is_collide_right_end,
+							.is_collide_left_top,
+							.is_collide_right_top);
 				
 	// Deremine whether the girl is dead	
 	dead_girl dg(.x(girl_x_pos),
@@ -108,6 +117,13 @@ module  girl_motion
 					 .height(40),
 					 .is_dead_girl);
 					 
+	// Determine whether the girl is win
+	win_girl wg(.x(girl_x_pos),
+					.y(girl_y_pos),
+					.width(20),
+					.height(40),
+					.is_win_girl);
+	
 	// Determine whether the blue diamond is eaten
 
 	is_blue_diamond_eat blue_eat(.Clk,
@@ -118,7 +134,8 @@ module  girl_motion
 										  .height(40),
 										  .is_diamond_eat1,
 										  .is_diamond_eat2,
-										  .is_diamond_eat3);
+										  .is_diamond_eat3,
+										  .num_eat_blue);
 										  
 	// Determine the status of the button
 	button_push button_push(.Clk,
@@ -163,6 +180,19 @@ module  girl_motion
 							 .is_collide_up_board_purple,
 							 .is_collide_down_board_purple,
 							 .is_collide_right_board_purple);
+							 
+	logic is_collide_down_box;
+	
+	collision_box cb1(.x(girl_x_pos), 
+							.y(girl_y_pos), 
+							.width(20), 
+							.height(40),
+							.box_x_pos,
+							.box_y_pos,
+							.is_collide_left_box,
+							.is_collide_right_box,
+							.is_collide_down_box);
+		
 							
 	always_comb begin
          girl_x_pos_in = girl_x_pos;
@@ -194,7 +224,7 @@ module  girl_motion
 							  girl_x_motion_in = girl_x_step;
 							  next_state = UP1;
 							  end	  
-						 if (is_collide_down == 1'b0 && is_collide_down_board == 1'b0 && is_collide_down_board_purple == 1'b0)
+						 if (is_collide_down == 1'b0 && is_collide_down_board == 1'b0 && is_collide_down_board_purple == 1'b0 && is_collide_down_box == 1'b0)
 							 next_state = DOWN1;
 						 if (is_collide_down_board_purple == 1'b1 && is_board_up == 1'b1)
 							girl_y_motion_in = (~(3) + 1'b1);
@@ -202,9 +232,9 @@ module  girl_motion
 
 					LEFT: begin
 						max_up_in = max_up_in - max_up_in;
-						 if (is_collide_left == 1'b0 && is_collide_left_board == 1'b0)
+						 if (is_collide_left == 1'b0 && is_collide_left_board == 1'b0 && is_collide_right_box == 1'b0)
 						    begin
-							 girl_x_motion_in = (~(girl_x_step) + 1'b1);
+								girl_x_motion_in = (~(girl_x_step) + 1'b1);
 							 if (is_collide_left_end == 1'b1) 
 								girl_y_motion_in = (~(2) + 1'b1);
 							 else
@@ -235,15 +265,17 @@ module  girl_motion
 						 end
 						 if (is_collide_down_board_purple == 1'b1 && is_board_up == 1'b1)
 							girl_y_motion_in = (~(1) + 1'b1);
+						 if (is_collide_right_box == 1'b1)
+						    next_state = STILL;
 					end
 
 					RIGHT: begin
 						max_up_in = max_up_in - max_up_in;	
-						 if (is_collide_right == 1'b0 && is_collide_right_board_purple == 1'b0)
+						 if (is_collide_right == 1'b0 && is_collide_right_board_purple == 1'b0 && is_collide_left_box == 1'b0)
 							begin
 							girl_x_motion_in = girl_x_step;
 							if (is_collide_right_end == 1'b1) 
-								girl_y_motion_in = (~(3) + 1'b1);
+								girl_y_motion_in = (~(2) + 1'b1);
 							 else
 								girl_y_motion_in = 10'd0;
 							end
@@ -268,6 +300,8 @@ module  girl_motion
 						 end
 						if (is_collide_down_board_purple == 1'b1 && is_board_up == 1'b1)
 							girl_y_motion_in = (~(1) + 1'b1);
+						 if (is_collide_left_box == 1'b1)
+						    next_state = STILL;
 						 
 					end
 
@@ -299,9 +333,9 @@ module  girl_motion
 								next_state = DOWN1;
 								end
 						 if (keycode != 16'h0407 || keycode != 16'h0704) begin
-							 if ((keycode[15:8] == 8'h04 || keycode[7:0] == 8'h04) && is_collide_left == 1'b0)
+							 if ((keycode[15:8] == 8'h04 || keycode[7:0] == 8'h04) && is_collide_left == 1'b0 && is_collide_left_top == 1'b0)
 								  girl_x_motion_in = (~(1) + 1'b1);
-							 else if ((keycode[15:8] == 8'h07 || keycode[7:0] == 8'h07) && is_collide_right == 1'b0)
+							 else if ((keycode[15:8] == 8'h07 || keycode[7:0] == 8'h07) && is_collide_right == 1'b0 && is_collide_right_top == 1'b0)
 								  girl_x_motion_in = 1;
 							end
 					end
@@ -309,7 +343,7 @@ module  girl_motion
 					DOWN1: begin
 					max_up_in = max_up_in - max_up_in;
 						 girl_x_motion_in = 0;
-						 if (is_collide_down == 1'b0 && is_collide_down_board == 1'b0 && is_collide_down_board_purple == 1'b0)
+						 if (is_collide_down == 1'b0 && is_collide_down_board == 1'b0 && is_collide_down_board_purple == 1'b0 && is_collide_down_box == 1'b0)
 								begin
 								girl_y_motion_in = 1;
 								end

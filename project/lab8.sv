@@ -44,8 +44,16 @@ module lab8( input               CLOCK_50,
                                  DRAM_CKE,     //SDRAM Clock Enable
                                  DRAM_WE_N,    //SDRAM Write Enable
                                  DRAM_CS_N,    //SDRAM Chip Select
-                                 DRAM_CLK      //SDRAM Clock
-                    );
+                                 DRAM_CLK,      //SDRAM Clock
+				//Add for audio part
+             input 					AUD_ADCDAT,
+             input 					AUD_DACLRCK,
+             input 					AUD_ADCLRCK,
+             input 					AUD_BCLK,
+             output logic        I2C_SCLK, 
+											I2C_SDAT, 
+											AUD_XCK, 
+											AUD_DACDAT);
     
     logic Reset_h, Clk;
     logic [15:0] keycode, keycode0, keycode1, keycode_girl, keycode_boy;
@@ -72,6 +80,8 @@ module lab8( input               CLOCK_50,
 	 logic is_boy;
 	 logic is_map1;
 	 logic is_background;
+	 logic is_gameover;
+	 logic is_gamewin;
 	 logic is_blue_diamond;
 	 logic is_blue_diamond1;
 	 logic is_blue_diamond2;
@@ -89,6 +99,8 @@ module lab8( input               CLOCK_50,
 	 // Signal for the address for the display element
 	 logic [16:0] background_address;
 	 logic [16:0] map1_address;
+	 logic [11:0] gameover_address;
+	 logic [11:0] gamewin_address;
 	 logic [9:0] girl_address;
 	 logic [9:0] boy_address;
 	 logic [8:0] blue_diamond_address;
@@ -108,6 +120,9 @@ module lab8( input               CLOCK_50,
 	 logic is_dead;
 	 logic is_dead_girl;
 	 logic is_dead_boy;
+	 logic is_win;
+	 logic is_win_girl;
+	 logic is_win_boy;
    
 	 // Determine whether the blue diamond is eaten
 	 logic is_diamond_eat1;
@@ -116,6 +131,8 @@ module lab8( input               CLOCK_50,
 	 logic is_diamond_eat1_red;
 	 logic is_diamond_eat1_red1;
 	 logic is_diamond_eat1_red2;
+	 logic [3:0] num_eat_blue;
+	 logic [3:0] num_eat_red;
 	 
 	 // Determine whether the board come down
 	 logic is_button_push;
@@ -149,10 +166,23 @@ module lab8( input               CLOCK_50,
 	 logic is_collide_down_board_purple;
 	 
 	 logic is_board_up;
+	 
+	 // Determine the box
+	 logic is_box_left_push;
+	 logic is_box_right_push;
+	 logic is_collide_left_box_girl, is_collide_right_box_girl;
+	 logic is_collide_left_box_boy, is_collide_right_box_boy;
+	 logic [9:0] box_x_pos, box_y_pos;
+ 
 // ----------------------------------------------------------
+	 logic keyboardpress;
+	 logic is_girlword, is_boyword;
+	 logic [11:0] girlword_address, boyword_address;
 
+	 logic is_designer;
+	 logic [12:0] designer_address;
 
-
+	 
 // ---------------- hpi and nios module ---------------------
 
     // Interface between NIOS II and EZ-OTG chip
@@ -204,6 +234,8 @@ module lab8( input               CLOCK_50,
     
 	 
 	 keycode_select ks(.keycode, .keycode0, .keycode_girl, .keycode_boy);
+	 
+	 word_output wo(.Clk, .Reset(Reset_h), .keycode_girl, .keycode_boy, .keyboardpress);
 // -----------------------------------------------------------------
 
 
@@ -227,20 +259,26 @@ module lab8( input               CLOCK_50,
 									 .board_y_pos,
 									 .board_purple_x_pos,
 									 .board_purple_y_pos,
+									 .box_x_pos,
+									 .box_y_pos,
 									 .keycode(keycode_girl),
 									 .is_board_up,
 									 .is_girl, 
 									 .girl_status, 
 									 .girl_address, 
 									 .is_dead_girl,
+									 .is_win_girl,
 									 .is_diamond_eat1,
 									 .is_diamond_eat2,
 									 .is_diamond_eat3,
+									 .num_eat_blue,
 									 .is_button_push(is_button_push_girl),
 									 .is_button_purple_push1(is_button_purple_push1_girl),
 									 .is_button_purple_push2(is_button_purple_push2_girl),
 									 .is_collide_up_board(is_collide_up_board_girl),
-									 .is_collide_up_board_purple(is_collide_up_board_purple_girl));
+									 .is_collide_up_board_purple(is_collide_up_board_purple_girl),
+									 .is_collide_left_box(is_collide_left_box_girl),
+									 .is_collide_right_box(is_collide_right_box_girl));
 	 
 	 boy_motion boy_motion(.Clk,
 	                       .Reset(Reset_h),
@@ -251,25 +289,41 @@ module lab8( input               CLOCK_50,
 								  .board_y_pos,
 								  .board_purple_x_pos,
 								  .board_purple_y_pos,
+								  .box_x_pos,
+								  .box_y_pos,
 								  .keycode(keycode_boy),
 								  .is_board_up,
 								  .is_boy,
 								  .boy_status,
 								  .boy_address,
 								  .is_dead_boy,
+								  .is_win_boy,
 								  .is_diamond_eat1_red,
 								  .is_diamond_eat1_red1,
 								  .is_diamond_eat1_red2,
+								  .num_eat_red,
 								  .is_button_push(is_button_push_boy),
 								  .is_button_purple_push1(is_button_purple_push1_boy),  
 								  .is_button_purple_push2(is_button_purple_push2_boy),  
 								  .is_collide_up_board(is_collide_up_board_boy),
-								  .is_collide_up_board_purple(is_collide_up_board_purple_boy));
+								  .is_collide_up_board_purple(is_collide_up_board_purple_boy),
+								  .is_collide_left_box(is_collide_left_box_boy),
+								  .is_collide_right_box(is_collide_right_box_boy));
 	 
 	 
 	 background background(.status, .DrawX, .DrawY, .is_background, .background_address);
 	 
+	 girl_word gw(.keyboardpress, .DrawX, .DrawY, .is_girlword, .girlword_address);
+	 
+	 boy_word Bw(.keyboardpress, .DrawX, .DrawY, .is_boyword, .boyword_address);
+	 
 	 map1 map1(.status, .DrawX, .DrawY, .is_map1, .map1_address);
+	 
+	 gameover gameover(.status, .DrawX, .DrawY, .is_gameover, .gameover_address);
+	 
+	 gamewin gamewin(.status, .DrawX, .DrawY, .is_gamewin, .gamewin_address);
+
+	 designer designer(.DrawX, .DrawY, .is_designer, .designer_address);
 	 
 	 blue_diamond bd(.DrawX,
 	                 .DrawY, 
@@ -301,7 +355,17 @@ module lab8( input               CLOCK_50,
 	 
 	 button_yellow button_y(.DrawX, .DrawY, .is_button_push, .is_button_yellow, .button_yellow_address);
 	 
-	 box box(.DrawX, .DrawY, .is_box, .box_address);
+	 box_motion box_motion(.Clk,
+								  .Reset(Reset_h),
+								  .frame_clk(VGA_VS),
+							     .DrawX,
+							     .DrawY,
+								  .is_box_left_push,
+								  .is_box_right_push,
+								  .is_box,
+								  .box_address,
+								  .box_x_pos,
+								  .box_y_pos);
 	 
 	 board_motion(.Clk,
 					  .Reset(Reset_h),
@@ -335,13 +399,16 @@ module lab8( input               CLOCK_50,
 // -----------------------------------------------------------------
 
 	 // Whole logic of the game
-	 game_logic my_logic(.Clk, .Reset(Reset_h), .keycode, .status);
+	 game_logic my_logic(.Clk, .Reset(Reset_h), .is_dead, .is_win, .keycode, .status);
 	 
 	 
     color_mapper color_instance(
 										  .status(status),
+										  .is_gameover(is_gameover),
 										  .is_girl(is_girl), 
 										  .is_boy(is_boy),
+										  .is_girlword(is_girlword),
+										  .is_boyword(is_boyword),
 										  .girl_status(girl_status),
 										  .boy_status(boy_status),
 										  .is_background(is_background), 
@@ -358,10 +425,13 @@ module lab8( input               CLOCK_50,
 										  .is_button1(is_button1),
 										  .is_button_yellow(is_button_yellow),
 										  .is_box(is_box),
+										  .is_designer(is_designer),
 										  .map1_address(map1_address), 
 										  .background_address(background_address), 
 										  .girl_address(girl_address),
 										  .boy_address(boy_address),
+										  .girlword_address(girlword_address),
+										  .boyword_address(boyword_address),								  
 										  .blue_diamond_address(blue_diamond_address),
 										  .blue_diamond_address1(blue_diamond_address1),
 										  .blue_diamond_address2(blue_diamond_address2),
@@ -374,6 +444,9 @@ module lab8( input               CLOCK_50,
 										  .button_address1(button_address1),
 										  .button_yellow_address(button_yellow_address),
 										  .box_address(box_address),
+										  .gameover_address(gameover_address),
+										  .gamewin_address(gamewin_address),
+										  .designer_address(designer_address),
 										  .DrawX(DrawX),
 										  .DrawY(DrawY),
 										  .VGA_R(VGA_R),
@@ -387,28 +460,58 @@ module lab8( input               CLOCK_50,
 	 select sel4(.in0(is_collide_up_board_boy), .in1(is_collide_up_board_girl), .out(is_collide_up_board));
 	 select sel5(.in0(is_collide_up_board_purple_boy), .in1(is_collide_up_board_purple_girl), .out(is_collide_up_board_purple));
 	 select sel6(.in0(is_button_purple_push2_boy), .in1(is_button_purple_push2_girl), .out(is_button_purple_push2));
+	 select sel7(.in0(is_collide_left_box_boy), .in1(is_collide_left_box_girl), .out(is_box_left_push));
+	 select sel8(.in0(is_collide_right_box_boy), .in1(is_collide_right_box_girl), .out(is_box_right_push));
 	 
+	 
+	 always_comb begin
+		if (is_win_boy == 1'b1 && is_win_girl == 1'b1)
+			is_win = 1'b1;
+		else 
+			is_win = 1'b0;
+	 end
 	 
 	 
 	 // Display keycode on hex display
-    HexDriver hex_inst_0 (keycode_girl[3:0], HEX0);
-    HexDriver hex_inst_1 (keycode_girl[7:4], HEX1);
-    HexDriver hex_inst_2 (keycode_girl[11:8], HEX2);
-    HexDriver hex_inst_3 (keycode_girl[15:12], HEX3);
+    HexDriver hex_inst_0 (4'b0, HEX0);
+    HexDriver hex_inst_1 (4'b0, HEX1);
+    HexDriver hex_inst_2 (4'b0, HEX2);
+    HexDriver hex_inst_3 (4'b0, HEX3);
 
-    HexDriver hex_inst_4 (keycode_boy[3:0], HEX4);
-    HexDriver hex_inst_5 (keycode_boy[7:4], HEX5);
+    HexDriver hex_inst_4 (num_eat_blue, HEX4);
+    HexDriver hex_inst_5 (4'b0, HEX5);
 
-    HexDriver hex_inst_6 (keycode_boy[11:8], HEX6);
-    HexDriver hex_inst_7 (keycode_boy[15:12], HEX7);
-
+    HexDriver hex_inst_6 (num_eat_red, HEX6);
+    HexDriver hex_inst_7 (4'b0, HEX7);
 	 
+	logic  [16:0] Add;
+	logic  [16:0]music_content;
+		 audio audio1(.*, .Reset(Reset_h));
+		 music music1(.*);
+		 audio_interface music_int ( .LDATA(music_content), 
+				 .RDATA(music_content),
+				 .CLK(Clk),
+				 .Reset(Reset_h), 
+				 .INIT(INIT),
+				 .INIT_FINISH(INIT_FINISH),
+				 .adc_full(adc_full),
+				 .data_over(data_over),
+				 .AUD_MCLK(AUD_XCK),
+				 .AUD_BCLK(AUD_BCLK),     
+				 .AUD_ADCDAT(AUD_ADCDAT),
+				 .AUD_DACDAT(AUD_DACDAT),
+				 .AUD_DACLRCK(AUD_DACLRCK),
+				 .AUD_ADCLRCK(AUD_ADCLRCK),
+				 .I2C_SDAT(I2C_SDAT),
+				 .I2C_SCLK(I2C_SCLK),
+				 .ADCDATA(ADCDATA),
+		 );
 // ------------------------- led for debug -------------------
 	 always_comb
     begin
 	   // default case
 	   led = 8'b0000;
-		case(is_dead)
+		case(is_collide_right_box_girl)
 				// dead
 				1'b1: begin
 							led = 8'b0010;

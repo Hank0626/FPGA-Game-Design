@@ -600,7 +600,6 @@ set_global_assignment -name SYSTEMVERILOG_FILE game_logic.sv
 set_global_assignment -name QIP_FILE lab8_soc/synthesis/lab8_soc.qip
 set_global_assignment -name SYSTEMVERILOG_FILE girl_motion_fsm.sv
 set_global_assignment -name SYSTEMVERILOG_FILE collision.sv
-set_global_assignment -name VERILOG_FILE sdram_control.v
 set_global_assignment -name SYSTEMVERILOG_FILE blue_diamond_1st_level.sv
 set_global_assignment -name SYSTEMVERILOG_FILE board1.sv
 set_global_assignment -name SYSTEMVERILOG_FILE button.sv
@@ -613,4 +612,8 @@ set_global_assignment -name SYSTEMVERILOG_FILE boy_motion_fsm.sv
 set_global_assignment -name SYSTEMVERILOG_FILE dead.sv
 set_global_assignment -name SYSTEMVERILOG_FILE mux.sv
 set_global_assignment -name SYSTEMVERILOG_FILE keycode_select.sv
+set_global_assignment -name SYSTEMVERILOG_FILE win.sv
+set_global_assignment -name SYSTEMVERILOG_FILE audio.sv
+set_global_assignment -name VHDL_FILE audio_interface.vhd
+set_global_assignment -name SYSTEMVERILOG_FILE music.sv
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

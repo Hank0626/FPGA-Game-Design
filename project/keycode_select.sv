@@ -15,11 +15,11 @@ module keycode_select(
 		keycode_girl = 16'h0000;
 		keycode_boy = 16'h0000;
 		
-		if (keycode[15:8] == 8'h50 || keycode[7:0] == 8'h50 || keycode0[15:8] == 8'h50 || keycode0[7:0] == 8'h50)
+		if (keycode[15:8] == 8'h5c || keycode[7:0] == 8'h5c || keycode0[15:8] == 8'h5c || keycode0[7:0] == 8'h5c)
 			boy_left = 1'b1;
-		if (keycode[15:8] == 8'h4f || keycode[7:0] == 8'h4f || keycode0[15:8] == 8'h4f || keycode0[7:0] == 8'h4f)
+		if (keycode[15:8] == 8'h5e || keycode[7:0] == 8'h5e || keycode0[15:8] == 8'h5e || keycode0[7:0] == 8'h5e)
 			boy_right = 1'b1;		
-		if (keycode[15:8] == 8'h52 || keycode[7:0] == 8'h52 || keycode0[15:8] == 8'h52 || keycode0[7:0] == 8'h52)
+		if (keycode[15:8] == 8'h60 || keycode[7:0] == 8'h60 || keycode0[15:8] == 8'h60 || keycode0[7:0] == 8'h60)
 			boy_up = 1'b1;		
 				
 		if (keycode[15:8] == 8'h04 || keycode[7:0] == 8'h04 || keycode0[15:8] == 8'h04 || keycode0[7:0] == 8'h04)
@@ -30,15 +30,15 @@ module keycode_select(
 			girl_up = 1'b1;
 
 		if (boy_up == 1'b1)
-				keycode_boy = keycode_boy + 16'h5200;
+				keycode_boy = keycode_boy + 16'h6000;
 		
 		if (boy_left == 1'b1 && boy_right == 1'b1) begin
 		end	
 		else begin
 			if (boy_left == 1'b1)
-				keycode_boy = keycode_boy + 16'h0050;
+				keycode_boy = keycode_boy + 16'h005c;
 			else if (boy_right == 1'b1)
-				keycode_boy = keycode_boy + 16'h004f;
+				keycode_boy = keycode_boy + 16'h005e;
 		
 		end
 		

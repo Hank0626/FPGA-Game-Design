@@ -19,7 +19,8 @@ module is_blue_diamond_eat
 			input 	[6:0] height,
 			output 	is_diamond_eat1,
 			output   is_diamond_eat2,
-			output   is_diamond_eat3
+			output   is_diamond_eat3,
+			output [3:0] num_eat_blue
 		);
 
 		logic	[9:0] x_left_cen;
@@ -97,6 +98,7 @@ module is_blue_diamond_eat
 					is_diamond_eat1 = 1'b0;
 					is_diamond_eat2 = 1'b0;
 					is_diamond_eat3 = 1'b0;
+					num_eat_blue = 4'b0;
 					if (eat1 == 1'b1 && eat2 == 1'b0 && eat3 == 1'b0) 
 						next_state = EAT1;
 					if (eat1 == 1'b0 && eat2 == 1'b1 && eat3 == 1'b0) 
@@ -116,6 +118,7 @@ module is_blue_diamond_eat
 					is_diamond_eat1 = 1'b1;
 					is_diamond_eat2 = 1'b0;
 					is_diamond_eat3 = 1'b0;
+					num_eat_blue = 4'b1;
 					if (eat2 == 1'b1 && eat3 == 1'b0)
 						next_state = EAT4;
 					if (eat2 == 1'b0 && eat3 == 1'b1)
@@ -127,6 +130,7 @@ module is_blue_diamond_eat
 					is_diamond_eat1 = 1'b0;
 					is_diamond_eat2 = 1'b1;
 					is_diamond_eat3 = 1'b0;
+					num_eat_blue = 4'b1;
 					if (eat1 == 1'b1 && eat3 == 1'b0)
 						next_state = EAT4;
 					if (eat1 == 1'b0 && eat3 == 1'b1)
@@ -138,6 +142,7 @@ module is_blue_diamond_eat
 					is_diamond_eat1 = 1'b0;
 					is_diamond_eat2 = 1'b0;
 					is_diamond_eat3 = 1'b1;
+					num_eat_blue = 4'b1;
 					if (eat1 == 1'b1 && eat2 == 1'b0)
 						next_state = EAT5;
 					if (eat1 == 1'b0 && eat2 == 1'b1)
@@ -149,6 +154,7 @@ module is_blue_diamond_eat
 					is_diamond_eat1 = 1'b1;
 					is_diamond_eat2 = 1'b1;
 					is_diamond_eat3 = 1'b0;
+					num_eat_blue = 4'b10;
 					if (eat3 == 1'b1)
 						next_state = EAT7;
 				end
@@ -156,6 +162,7 @@ module is_blue_diamond_eat
 					is_diamond_eat1 = 1'b1;
 					is_diamond_eat2 = 1'b0;
 					is_diamond_eat3 = 1'b1;
+					num_eat_blue = 4'b10;
 					if (eat2 == 1'b1)
 						next_state = EAT7;
 				end
@@ -163,6 +170,7 @@ module is_blue_diamond_eat
 					is_diamond_eat1 = 1'b0;
 					is_diamond_eat2 = 1'b1;
 					is_diamond_eat3 = 1'b1;
+					num_eat_blue = 4'b10;
 					if (eat1 == 1'b1)
 						next_state = EAT7;
 				end
@@ -170,6 +178,7 @@ module is_blue_diamond_eat
 					is_diamond_eat1 = 1'b1;
 					is_diamond_eat2 = 1'b1;
 					is_diamond_eat3 = 1'b1;
+					num_eat_blue = 4'b11;
 				end
 			endcase
 					
@@ -188,7 +197,8 @@ module is_red_diamond_eat
 			input 	[6:0] height,
 			output 	is_diamond_eat1_red,
 			output   is_diamond_eat1_red1,
-			output   is_diamond_eat1_red2
+			output   is_diamond_eat1_red2,
+			output [3:0] num_eat_red
 		);
 
 		logic	[9:0] x_left_cen;
@@ -266,6 +276,7 @@ module is_red_diamond_eat
 					is_diamond_eat1_red = 1'b0;
 					is_diamond_eat1_red1 = 1'b0;
 					is_diamond_eat1_red2 = 1'b0;
+					num_eat_red = 4'b0;
 					if (eat1 == 1'b1 && eat2 == 1'b0 && eat3 == 1'b0) 
 						next_state = EAT1;
 					if (eat1 == 1'b0 && eat2 == 1'b1 && eat3 == 1'b0) 
@@ -285,6 +296,7 @@ module is_red_diamond_eat
 					is_diamond_eat1_red = 1'b1;
 					is_diamond_eat1_red1 = 1'b0;
 					is_diamond_eat1_red2 = 1'b0;
+					num_eat_red = 4'b1;
 					if (eat2 == 1'b1 && eat3 == 1'b0)
 						next_state = EAT4;
 					if (eat2 == 1'b0 && eat3 == 1'b1)
@@ -296,6 +308,7 @@ module is_red_diamond_eat
 					is_diamond_eat1_red = 1'b0;
 					is_diamond_eat1_red1 = 1'b1;
 					is_diamond_eat1_red2 = 1'b0;
+					num_eat_red = 4'b1;
 					if (eat1 == 1'b1 && eat3 == 1'b0)
 						next_state = EAT4;
 					if (eat1 == 1'b0 && eat3 == 1'b1)
@@ -307,6 +320,7 @@ module is_red_diamond_eat
 					is_diamond_eat1_red = 1'b0;
 					is_diamond_eat1_red1 = 1'b0;
 					is_diamond_eat1_red2 = 1'b1;
+					num_eat_red = 4'b1;
 					if (eat1 == 1'b1 && eat2 == 1'b0)
 						next_state = EAT5;
 					if (eat1 == 1'b0 && eat2 == 1'b1)
@@ -318,6 +332,7 @@ module is_red_diamond_eat
 					is_diamond_eat1_red = 1'b1;
 					is_diamond_eat1_red1 = 1'b1;
 					is_diamond_eat1_red2 = 1'b0;
+					num_eat_red = 4'b10;
 					if (eat3 == 1'b1)
 						next_state = EAT7;
 				end
@@ -325,6 +340,7 @@ module is_red_diamond_eat
 					is_diamond_eat1_red = 1'b1;
 					is_diamond_eat1_red1 = 1'b0;
 					is_diamond_eat1_red2 = 1'b1;
+					num_eat_red = 4'b10;
 					if (eat2 == 1'b1)
 						next_state = EAT7;
 				end
@@ -332,6 +348,7 @@ module is_red_diamond_eat
 					is_diamond_eat1_red = 1'b0;
 					is_diamond_eat1_red1 = 1'b1;
 					is_diamond_eat1_red2 = 1'b1;
+					num_eat_red = 4'b10;
 					if (eat1 == 1'b1)
 						next_state = EAT7;
 				end
@@ -339,6 +356,51 @@ module is_red_diamond_eat
 					is_diamond_eat1_red = 1'b1;
 					is_diamond_eat1_red1 = 1'b1;
 					is_diamond_eat1_red2 = 1'b1;
+					num_eat_red = 4'b11;
+				end
+			endcase
+					
+		end		
+endmodule
+
+
+
+module word_output
+(
+			input 	Clk,
+			input  	Reset,
+			input 	[15:0] keycode_girl, keycode_boy,
+			output 	keyboardpress
+		);
+
+
+		enum logic [3:0] {BEGIN, PRESS} curr_state, next_state;
+		
+
+		
+		always_ff @ (posedge Clk)
+			begin 
+				if (Reset)
+				begin
+					curr_state <= BEGIN;
+				end
+				
+				else
+				begin
+					curr_state <= next_state;
+				end
+			end
+		
+		always_comb begin
+			next_state = curr_state;
+			unique case (curr_state)
+				BEGIN: begin
+					keyboardpress = 1'b0;
+					if (keycode_girl != 16'h0000 || keycode_boy != 16'h0000)
+						next_state = PRESS;
+				end
+				PRESS: begin
+					keyboardpress = 1'b1;
 				end
 			endcase
 					

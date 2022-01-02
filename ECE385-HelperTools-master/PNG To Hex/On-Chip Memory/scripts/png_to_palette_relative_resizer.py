@@ -31,8 +31,8 @@ palette_hex = ['0xf80504',
                '0x000000',
                '0xac0404', # red for dead
                '0x4face5', # blue for dead
-               '0x69a42a'] # green for dead
-#               '0x776633'] # brown for win
+               '0x69a42a', # green for dead
+               '0x776633'] # brown for win
 # palette_hex = ['0x9a12a2', '0x000000', '0xdcdcd9']
 # palette_hex = ['0xffffff','0x9a12a2', '0xefbe41']
 # palette_hex = ['0xffffff', '0xceb244']
@@ -43,6 +43,10 @@ palette_hex = ['0xf80504',
 #                '0xff4c4a',
 #                '0xfe9597',
 #                '0xba0102']
+# palette_hex = ['0x00000', '0xf80504', '0x69ddfb']
+#palette_hex = ['0x00000', '0xdd8ad2']
+# palette_hex = ['0xffffff', '0xd8ca72']
+# palette_hex = ['0xffffff', '0xc2ae4d']
 
 palette_rgb = [hex_to_rgb(color) for color in palette_hex]
 

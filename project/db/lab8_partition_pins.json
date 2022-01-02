@@ -4,51 +4,7 @@
 			"name" : "Top",
 			"pins" : [
 				{
-					"name" : "HEX0[0]",
-					"strict" : false
-				},
-				{
-					"name" : "HEX0[3]",
-					"strict" : false
-				},
-				{
-					"name" : "HEX0[4]",
-					"strict" : false
-				},
-				{
-					"name" : "HEX0[5]",
-					"strict" : false
-				},
-				{
-					"name" : "HEX0[6]",
-					"strict" : false
-				},
-				{
-					"name" : "HEX2[3]",
-					"strict" : false
-				},
-				{
-					"name" : "HEX2[6]",
-					"strict" : false
-				},
-				{
-					"name" : "HEX3[0]",
-					"strict" : false
-				},
-				{
-					"name" : "HEX3[3]",
-					"strict" : false
-				},
-				{
-					"name" : "HEX3[4]",
-					"strict" : false
-				},
-				{
-					"name" : "HEX3[5]",
-					"strict" : false
-				},
-				{
-					"name" : "HEX4[1]",
+					"name" : "HEX4[0]",
 					"strict" : false
 				},
 				{
@@ -60,31 +16,31 @@
 					"strict" : false
 				},
 				{
+					"name" : "HEX4[4]",
+					"strict" : false
+				},
+				{
+					"name" : "HEX4[5]",
+					"strict" : false
+				},
+				{
 					"name" : "HEX4[6]",
 					"strict" : false
 				},
 				{
-					"name" : "HEX5[0]",
-					"strict" : false
-				},
-				{
-					"name" : "HEX5[1]",
-					"strict" : false
-				},
-				{
-					"name" : "HEX5[3]",
-					"strict" : false
-				},
-				{
-					"name" : "HEX5[4]",
-					"strict" : false
-				},
-				{
-					"name" : "HEX5[6]",
+					"name" : "HEX6[0]",
 					"strict" : false
 				},
 				{
 					"name" : "HEX6[2]",
+					"strict" : false
+				},
+				{
+					"name" : "HEX6[3]",
+					"strict" : false
+				},
+				{
+					"name" : "HEX6[4]",
 					"strict" : false
 				},
 				{
@@ -93,18 +49,6 @@
 				},
 				{
 					"name" : "HEX6[6]",
-					"strict" : false
-				},
-				{
-					"name" : "HEX7[1]",
-					"strict" : false
-				},
-				{
-					"name" : "HEX7[4]",
-					"strict" : false
-				},
-				{
-					"name" : "HEX7[6]",
 					"strict" : false
 				},
 				{
@@ -340,6 +284,22 @@
 					"strict" : false
 				},
 				{
+					"name" : "I2C_SCLK",
+					"strict" : false
+				},
+				{
+					"name" : "I2C_SDAT",
+					"strict" : false
+				},
+				{
+					"name" : "AUD_XCK",
+					"strict" : false
+				},
+				{
+					"name" : "AUD_DACDAT",
+					"strict" : false
+				},
+				{
 					"name" : "OTG_DATA[0]",
 					"strict" : false
 				},
@@ -537,6 +497,14 @@
 				},
 				{
 					"name" : "KEY[0]",
+					"strict" : false
+				},
+				{
+					"name" : "AUD_DACLRCK",
+					"strict" : false
+				},
+				{
+					"name" : "AUD_BCLK",
 					"strict" : false
 				},
 				{
