@@ -86,7 +86,7 @@ Here is our module architecture.
 ```
 
 ## <a id="lic">License</a>
-All details can be found in the [license](./LICENSE) files.
+All details can be found in [license](./LICENSE).
 
 ## <a id="cite">Citation</a>
 Part of our code is base on this Part of our code is based on [ECE385-HelperTools-master](https://github.com/atrifex/ECE385-HelperTools). We would like to thank them for their excellent work.
